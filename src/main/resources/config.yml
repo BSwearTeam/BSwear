@@ -1,0 +1,24 @@
+# BSwearPlus (Build B), Based on BSwear #1 Antiswearing
+# By TheBSwearTeam
+
+# This is not a stable update (Stuff might be changed)
+# and you should look at the download page every outher day!!!
+
+# cancel message,
+#   true = cancel the message
+#   false = replace the swear word (best to use this)
+cancelMessage: false
+
+# send title,
+#   true = Use the build in TitlesAPI
+#   false = Does not use the TitlesAPI
+sendTitle: true
+
+
+# Block advertising,
+advertising:
+  - '.com' 
+  - ':25565'
+  - '.net'
+  - 'myserver'
+  - 'play.'
