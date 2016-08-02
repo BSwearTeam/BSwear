@@ -1,5 +1,7 @@
 package io.github.bswearteam.bswear;
 
+ import java.io.IOException;
+ import java.io.File;
  import java.util.logging.Logger;
  import org.bukkit.Bukkit;
  import org.bukkit.ChatColor;
@@ -17,6 +19,9 @@ package io.github.bswearteam.bswear;
  import org.bukkit.plugin.PluginManager;
  import org.bukkit.plugin.java.JavaPlugin;
  import org.bukkit.util.*;
+ import org.bukkit.configuration.InvalidConfigurationException;
+ import org.bukkit.configuration.file.FileConfiguration;
+ import org.bukkit.configuration.file.YamlConfiguration;
  
  import org.apache.commons.lang.StringUtils;
  
@@ -48,7 +53,7 @@ package io.github.bswearteam.bswear;
         pm.registerEvents(this, this);
         getLogger().info(ChatColor.GREEN + "BSwear protects this server!");
         getLogger().info(ChatColor.GREEN + "BSwear uses AdityaTD's Cluster API");
-        getLogger().info(ChatColor.GREEN + "BSwear uses Ramidzkh's KodeAPI")
+        getLogger().info(ChatColor.GREEN + "BSwear uses Ramidzkh's KodeAPI");
         
         getCommand("mute").setExecutor(new Mute(this));
         registerEvents(this, this, new OnJoin(), new Mute(this), new Advertising(this));
