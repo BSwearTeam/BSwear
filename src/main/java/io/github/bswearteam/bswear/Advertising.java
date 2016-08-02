@@ -24,6 +24,12 @@ import io.github.bswearteam.bswear.Main;
  */
 public class Advertising implements Listener {
 
+    private Main main;
+
+    public Advertising(Main m) {
+		main = m;
+	}
+
    public final Permission ADVERTISING_PERM = new Permission("bswear.advertising.bypass");
    
    @EventHandler
@@ -32,10 +38,11 @@ public class Advertising implements Listener {
       if (!player.hasPermission(ADVERTISING_PERM)) {
          String msg = event.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
          String swearer = player.getName();
-         //String prefix = config.getString("prefix");
-         //String advert = config.getStringList("advertising");
-         if (msg.contains(".com")) {
-            player.sendMessage("No Advertising");
+         String prefix = main.getConfig().getString("prefix");
+         for (String advert : main.getConfig().getStringList("advertising")) {
+            if (msg.contains(advert)) {
+                player.sendMessage("No Advertising");
+            }
          }
       }
    }
