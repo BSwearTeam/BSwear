@@ -13,12 +13,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.permissions.Permission;
 
+import io.github.bswearteam.*;
+
 /**
  *
  * @Author TheBSwearTeam
  */
 public class Mute implements Listener, CommandExecutor {
     
+    private Main main;
+    public Mute(Main m) {
+		main = m;
+	}
     public ArrayList<Player> mute = new ArrayList<Player>();
    
     @EventHandler
