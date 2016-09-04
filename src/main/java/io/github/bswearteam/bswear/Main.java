@@ -54,18 +54,23 @@ public class Main extends JavaPlugin implements Listener {
         saveDefaultConfig();
         
         pm.registerEvents(this, this);
-        // for console messages BSwear uses consolelog() and not getlogger()
+        // for console messages BSwear uses consolelog() and not getlogger(), so we can use colors
         boolean showEnabledMessage = getConfig().getBoolean("showEnabledMessage");
         if (showEnabledMessage) {
-        	consolelog(ChatColor.BOLD + "> " + ChatColor.AQUA + "");
-        	consolelog(ChatColor.BOLD + "> " + ChatColor.GREEN + "<=>" + ChatColor.AQUA + " The BSwear Team " + ChatColor.GREEN + "<=>");
-        	consolelog(ChatColor.BOLD + "> " + ChatColor.AQUA + "This server runs BSwear version "+version);
-        	consolelog(ChatColor.BOLD + "> " + ChatColor.AQUA + "BSwear uses the ClusterAPI (by AdityaTD), and the KodeAPI (by Ramidzkh)");
-        	consolelog(ChatColor.BOLD + "> " + ChatColor.AQUA + "");
+        	consolelog(ChatColor.AQUA + "");
+        	consolelog(ChatColor.GREEN + "BBB" + ChatColor.AQUA + " The BSwear Team " + ChatColor.GREEN + "BBB");
+        	consolelog(ChatColor.AQUA + "This server runs BSwear version "+version);
+        	consolelog(ChatColor.AQUA + "BSwear uses the ClusterAPI (by AdityaTD), and the KodeAPI (by Ramidzkh)");
+        	consolelog(ChatColor.AQUA + "");
         }
         
+        if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == true) {
+			getLogger().info("[ERROR] You can not have, ban and kick set to true!");
+		}
+
+        
         getCommand("mute").setExecutor(new Mute(this));
-        registerEvents(this, this, new OnJoin(), new Mute(this), new Advertising(this));
+        registerEvents(this, this, new OnJoin(this), new Mute(this), new Advertising(this));
         
         if (!isServerCompatable()) {
         	getLogger().warning("BSwear has not been tested to run on your version of Minecraft");
@@ -172,12 +177,23 @@ public class Main extends JavaPlugin implements Listener {
     				
     					
     					if (!getConfig().getBoolean("commandenable", false)) {
-    						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), sc.replace("%player%", swearer));
+    						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), sc.replace("%swearer%", swearer));
     					}
     				
     				
     					if (getConfig().getBoolean("sendTitle") == true) {
     						TitlesAPI.sendFullTitle(event.getPlayer(), 10, 80, 10, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
+    					}
+    					
+    					
+    					if (getConfig().getBoolean("kickSwearer") == true && getConfig().getBoolean("banSwearer") == false) {
+    						player.kickPlayer("We've detected a swear word MIGHT be in your message so we kicked you ");
+    					}
+    					
+    					
+    					if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == false) {
+    						player.kickPlayer("We've detected a swear word in your msg, so its setup to ban you");
+    						player.setBanned(true);
     					}
     			}
     		}
