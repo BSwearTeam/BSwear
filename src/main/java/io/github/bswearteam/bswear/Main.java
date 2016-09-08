@@ -13,6 +13,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -31,7 +32,7 @@ public class Main extends JavaPlugin implements Listener {
 	String version = "4.0";
 	String about = "BSwear, the #1 Antiswearing plugin for Minecraft, Block 400 swear words!";
 	
-	public Permission BypassPerm = new Permission("bswear.bypass");
+	public static Permission BypassPerm = new Permission("bswear.bypass");
 	public Permission COMMAND_PERM = new Permission("bswear.command.use");
     public Permission allPerm = new Permission("bswear.*");
 
@@ -175,31 +176,16 @@ public class Main extends JavaPlugin implements Listener {
     						player.sendMessage(swearmsg);
     					}
     				
-    					
-    					if (!getConfig().getBoolean("commandenable", false)) {
-    						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), sc.replace("%swearer%", swearer));
-    					}
-    				
-    				
-    					if (getConfig().getBoolean("sendTitle") == true) {
-    						TitlesAPI.sendFullTitle(event.getPlayer(), 10, 80, 10, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
-    					}
-    					
-    					
-    					if (getConfig().getBoolean("kickSwearer") == true && getConfig().getBoolean("banSwearer") == false) {
-    						player.kickPlayer("We've detected a swear word MIGHT be in your message so we kicked you ");
-    					}
-    					
-    					
-    					if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == false) {
-    						player.kickPlayer("We've detected a swear word in your msg, so its setup to ban you");
-    						player.setBanned(true);
-    					}
+    					// The flowing Will check the config, to see if the user has it enabled :)
+    					SwearUtils.runCommand(sc, swearer);
+      					SwearUtils.sendTitle(player);
+      					SwearUtils.kickSwearer(player);
+      					SwearUtils.banSwearer(player);
     			}
     		}
     	}
     }
-    
+
     
     
     
@@ -326,7 +312,7 @@ public class Main extends JavaPlugin implements Listener {
      * */
     public static String getBukkitVersion() {
 		return Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
-	}
+    }
     
     
     public static boolean isServerCompatable() {
