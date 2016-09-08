@@ -25,16 +25,15 @@ public class CommandSwear implements Listener {
    @EventHandler
    public void onCommandSwear(PlayerCommandPreprocessEvent event) {
       Player player = event.getPlayer();
-      String cmd = event.getMessage();
-      event.getMessage().substring(1).toLowerCase();
-      if (cmd.startsWith("/broadcast") || cmd.startsWith("/me")) {
+      String command = event.getMessage().substring(1).toLowerCase();
+      if (command.startsWith("broadcast") || command.startsWith("me")) {
     	  if (!player.hasPermission(CmdSwearBypass) || !player.hasPermission(Main.BypassPerm)) {
     		  String msg = event.getMessage().toLowerCase().replaceAll("[-_@]", "");
     		  String sc = main.getConfig().getString("command");
-    		  String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word MIGHT be in your message so we blocked that word!";
+    		  String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word that MIGHT be in your message so we blocked that word!";
     		  String swearer = player.getName();
     		  for (String word : main.getSwearConfig().getStringList("words")) {
-    			  if (msg.contains(word) && !msg.toLowerCase().contains("hello")) {
+    			  if (command.contains(word) && !command.toLowerCase().contains("hello")) {
   					
     				  if (main.getConfig().getBoolean("cancelMessage") == true) {
     					  event.setCancelled(true);
