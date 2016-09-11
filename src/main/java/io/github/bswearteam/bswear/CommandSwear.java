@@ -26,7 +26,7 @@ public class CommandSwear implements Listener {
    public void onCommandSwear(PlayerCommandPreprocessEvent event) {
       Player player = event.getPlayer();
       String command = event.getMessage().substring(1).toLowerCase();
-      if (command.startsWith("broadcast") || command.startsWith("me")) {
+      if (command.startsWith("/broadcast") || command.startsWith("/me")) { // Command should have an slash,
     	  if (!player.hasPermission(CmdSwearBypass) || !player.hasPermission(Main.BypassPerm)) {
     		  String msg = event.getMessage().toLowerCase().replaceAll("[-_@]", "");
     		  String sc = main.getConfig().getString("command");
