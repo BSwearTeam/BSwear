@@ -44,8 +44,9 @@ public class Main extends JavaPlugin implements Listener {
     private File configf, swearf;
     
     /**
+     * code thats ran when BSwear is enabled
+     * 
      * @author The BSwear Team
-     * @about code thats ran when BSwear is enabled
      * */
     public void onEnable() {
     	PluginManager pm = Bukkit.getServer().getPluginManager();
