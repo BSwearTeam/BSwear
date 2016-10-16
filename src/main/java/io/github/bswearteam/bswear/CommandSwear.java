@@ -26,9 +26,9 @@ public class CommandSwear implements Listener {
    public void onCommandSwear(PlayerCommandPreprocessEvent event) {
       Player player = event.getPlayer();
       String command = event.getMessage().substring(1).toLowerCase();
-      if (command.startsWith("broadcast") || command.startsWith("me") || command.startsWith("tell") || command.startsWith("msg")) { // Command should have an slash,
+      if (command.startsWith("broadcast") || command.startsWith("me") || command.startsWith("tell") || command.startsWith("msg")) {
     	  if (!player.hasPermission(CmdSwearBypass) || !player.hasPermission(Main.BypassPerm)) {
-    		  String msg = event.getMessage().toLowerCase().replaceAll("[-_@]", "");
+    		  command = command.replaceAll("[-_@]", "");
     		  String sc = main.getConfig().getString("command");
     		  String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word that MIGHT be in your message so we blocked that word!";
     		  String swearer = player.getName();

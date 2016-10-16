@@ -152,8 +152,7 @@ public class Main extends JavaPlugin implements Listener {
      * @author The BSwear Team
      * @since v1.0
      * */
-    @SuppressWarnings("deprecation")
-	@EventHandler
+    @EventHandler
     public void onChatSwear(AsyncPlayerChatEvent event) {
     	Player player = event.getPlayer();
     	if (!player.hasPermission(BypassPerm)) {

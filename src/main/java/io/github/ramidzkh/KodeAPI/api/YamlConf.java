@@ -3,6 +3,7 @@ package io.github.ramidzkh.KodeAPI.api;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -32,6 +33,7 @@ public class YamlConf {
 		try {
 			config.save(file); 
 		} catch (IOException e) {
+			Bukkit.getServer().getConsoleSender().sendMessage("Can not save file '"+file.getName()+"'"); // BSwear
 			e.printStackTrace();
 		}
 	}
