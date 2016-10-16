@@ -1,9 +1,9 @@
-name: BSwearPlus
+name: BSwear
 version: 4.0
 authors: [TheBSwearTeam]
 main: io.github.bswearteam.bswear.Main
 prefix: BSwear
-description: Block those nasty players from swearing!
+description: Block those nasty players from swearing! The best Antiswearing!
 permissions:
    BSwear.*:
      description: Gives access to all BSwear commands
@@ -12,3 +12,5 @@ permissions:
 commands:
     mute:
         description: mute players
+    bswear:
+        description: bswear command

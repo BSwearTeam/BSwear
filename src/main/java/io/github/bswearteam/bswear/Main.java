@@ -43,6 +43,7 @@ public class Main extends JavaPlugin implements Listener {
     
     private File configf, swearf;
     
+    
     /**
      * code thats ran when BSwear is enabled
      * 
@@ -82,16 +83,10 @@ public class Main extends JavaPlugin implements Listener {
     
     
     
-    
-    
     String addword = getConfig().getString("messages.addword");
     String delword = getConfig().getString("messages.delword");
     String noperm =  getConfig().getString("messages.noperm");
-    
-    //String title_msg =  getConfig().getString("messages.titlemsg");
     String swear_msg = getConfig().getString("messages.swearmsg");
-    
-    
     
     
     
@@ -316,8 +311,14 @@ public class Main extends JavaPlugin implements Listener {
     }
     
     
+    /**
+     * Checks if the server is compatable with BSwear!
+     * 
+     * @author BSwear Team
+     * */
     public static boolean isServerCompatable() {
-    	return getBukkitVersion().startsWith("v1_10") | 
+    	return getBukkitVersion().startsWith("v1_11") |//upcoming 1.11
+    			getBukkitVersion().startsWith("v1_10")| 
     			getBukkitVersion().startsWith("v1_9") |
     			getBukkitVersion().startsWith("v1_8") | 
     			getBukkitVersion().startsWith("v1_7") | 
@@ -325,7 +326,9 @@ public class Main extends JavaPlugin implements Listener {
     }
     
     
-    
+    /**
+     * send an message to the console!
+     * */
     public void consolelog(String message) {
     	Bukkit.getServer().getConsoleSender().sendMessage(message);
     }

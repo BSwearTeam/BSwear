@@ -1,18 +1,44 @@
-# BSwearPlus (Build B), Based on BSwear #1 Antiswearing
+# BSwear -- #1 Antiswearing!
 # By TheBSwearTeam
 
-# This is not a stable update (Stuff might be changed)
-# and you should look at the download page every outher day!!!
+# start message
+showEnabledMessage: true
+
 
 # cancel message,
 #   true = cancel the message
 #   false = replace the swear word (best to use this)
 cancelMessage: false
 
+
+# The Command to be ran when somewon swears
+# if you put the command kick it will not work!
+command: 'enter command here with out an slash'
+commandenable: false
+
+
+# Kick swearer,
+# Kicks the swearer (use this instead of the command /kick)
+kickSwearer: false
+
+
+# Ban swearer,
+# Bans the swearer (use this instead of the command /ban)
+banSwearer: false
+
+
 # send title,
 #   true = Use the build in TitlesAPI
 #   false = Does not use the TitlesAPI
 sendTitle: true
+
+# Messages,
+messages:
+    addword: 'Word Added'
+    delword: 'Word Removed'
+    noperm: 'No Permission'
+    swearmsg: 'No Swearing, Please'
+
 
 
 # Block advertising,
