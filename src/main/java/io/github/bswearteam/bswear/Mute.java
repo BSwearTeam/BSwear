@@ -32,7 +32,8 @@ public class Mute implements Listener, CommandExecutor {
             event.getPlayer().sendMessage("[BSwearMuteManger] " + "You are muted");
         }
     }
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    @SuppressWarnings("deprecation")
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
             if (sender.hasPermission("bswear.command.mute") || sender.isOp()) {
                 if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
