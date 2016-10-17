@@ -13,7 +13,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -24,13 +23,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.bswearteam.bswear.Advertising;
 import io.github.bswearteam.bswear.Mute;
 import io.github.bswearteam.bswear.OnJoin;
-import io.github.bswearteam.bswear.TitlesAPI;
-
 import io.github.ramidzkh.KodeAPI.api.YamlConf;
  
 public class Main extends JavaPlugin implements Listener {
-	String version = "4.0";
-	String about = "BSwear, the #1 Antiswearing plugin for Minecraft, Block 400 swear words!";
+	public String version = "4.0";
+	public String versionTag = "devBuild";
+	public String about = "BSwear, the #1 Antiswearing plugin for Minecraft, Block 400 swear words!";
 	
 	public static Permission BypassPerm = new Permission("bswear.bypass");
 	public Permission COMMAND_PERM = new Permission("bswear.command.use");
@@ -39,7 +37,7 @@ public class Main extends JavaPlugin implements Listener {
     public FileConfiguration config = new YamlConfiguration();
     public FileConfiguration swears = new YamlConfiguration();
 
-    String prefix = ChatColor.GOLD + "[BSwearPlus] " + ChatColor.GREEN;
+    String prefix = ChatColor.GOLD + "[BSwear] " + ChatColor.GREEN;
     
     private File configf, swearf;
     
@@ -80,7 +78,6 @@ public class Main extends JavaPlugin implements Listener {
         	getLogger().warning("Only: 1.10.x, 1.9.x, 1.8.x, 1.7.x, have been tested to work");
         }
     }
-    
     
     
     String addword = getConfig().getString("messages.addword");
@@ -156,10 +153,9 @@ public class Main extends JavaPlugin implements Listener {
     public void onChatSwear(AsyncPlayerChatEvent event) {
     	Player player = event.getPlayer();
     	if (!player.hasPermission(BypassPerm)) {
-    		String msg = event.getMessage().toLowerCase().replaceAll("[-_@]", "");
+    		String msg = event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", "");
     		String sc = getConfig().getString("command");
     		String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word MIGHT be in your message so we blocked that word!";
-    		String swearer = player.getName();
     		for (String word : getSwearConfig().getStringList("warnList")) {
     				if (msg.contains(word) && !msg.toLowerCase().contains("hello")) {
     				
@@ -172,10 +168,7 @@ public class Main extends JavaPlugin implements Listener {
     					}
     				
     					// The flowing Will check the config, to see if the user has it enabled :)
-    					SwearUtils.runCommand(sc, swearer);
-      					SwearUtils.sendTitle(player);
-      					SwearUtils.kickSwearer(player);
-      					SwearUtils.banSwearer(player);
+    					SwearUtils.checkAll(sc, player);
     			}
     		}
     	}
@@ -291,10 +284,10 @@ public class Main extends JavaPlugin implements Listener {
     		if (getConfig().getString("addword") == null && getConfig().getString("delword") == null) {
                   addword = "Word Added!";
                   delword = "Word Removed";
-              } else {
-            	  addword = ChatColor.translateAlternateColorCodes('&', getConfig().getString("addword"));
-            	  delword = ChatColor.translateAlternateColorCodes('&', getConfig().getString("delword"));
-              }
+            } else {
+            	addword = ChatColor.translateAlternateColorCodes('&', getConfig().getString("addword"));
+            	delword = ChatColor.translateAlternateColorCodes('&', getConfig().getString("delword"));
+            }
     	}
     }
 

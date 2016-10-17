@@ -74,4 +74,14 @@ public class SwearUtils {
 			player.setBanned(true); // Is there a better way to ban the player?
 		}
 	}
+	
+	/**
+	 * Checks every thing!
+	 * */
+	public static void checkAll(String sc, Player player) {
+		SwearUtils.runCommand(sc, player);
+		SwearUtils.sendTitle(player);
+		SwearUtils.kickSwearer(player);
+		SwearUtils.banSwearer(player);
+	}
 }
