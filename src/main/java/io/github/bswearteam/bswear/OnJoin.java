@@ -14,15 +14,10 @@ public class OnJoin implements Listener {
 		main = m;
 	}
 	
-	
-    String pwar = "2";
-    String maxwar = "2";    
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
-        String JoinPrefix = ChatColor.BLUE + "[" + ChatColor.AQUA + "BSwear" + ChatColor.BLUE + "]" + " ";
-        JoinPrefix = main.prefix;
+        String JoinPrefix = main.prefix;
         player.sendMessage(JoinPrefix + ChatColor.GRAY + "Our Antiswearing filter is protecting this server!");
-        //TODO player.sendMessage(JoinPrefix + ChatColor.GRAY + "You have " + pwar + "/" + maxwar + " Warnings left");
     }
 }
