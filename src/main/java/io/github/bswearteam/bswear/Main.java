@@ -28,7 +28,7 @@ import io.github.ramidzkh.KodeAPI.api.YamlConf;
 public class Main extends JavaPlugin implements Listener {
 	public String version = "4.0";
 	public String versionTag = "devBuild";
-	public String about = "BSwear, the #1 Antiswearing plugin for Minecraft, Block 400 swear words!";
+	public String about = "BSwear, the Antiswearing plugin for Minecraft, Block 400 swear words!";
 	
 	public static Permission BypassPerm = new Permission("bswear.bypass");
 	public Permission COMMAND_PERM = new Permission("bswear.command.use");
