@@ -27,7 +27,11 @@ public class TitlesAPI extends JavaPlugin implements Listener{
 	}
 	
 	public static void sendTitle(Player player, String title, String subtitle, boolean useBSwearMessageColors) {
-		sendTitle(player, ChatColor.DARK_RED + title, ChatColor.GOLD + subtitle);
+		if (useBSwearMessageColors){
+			sendTitle(player, ChatColor.DARK_RED + title, ChatColor.GOLD + subtitle);
+		} else {
+			sendTitle(player, title, subtitle);
+		}
 	}
 	//BSwear, end
 	
