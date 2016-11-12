@@ -157,7 +157,7 @@ public class Main extends JavaPlugin implements Listener {
     		String sc = getConfig().getString("command");
     		String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word MIGHT be in your message so we blocked that word!";
     		for (String word : getSwearConfig().getStringList("warnList")) {
-    				if (msg.contains(" "+word+" ") || msg.contains(" "+word) || msg.contains(word+" ") || replaceAllNotNormal(msg) = word) {
+    				if (msg.contains(" "+word+" ") || msg.contains(" "+word) || msg.contains(word+" ") || replaceAllNotNormal(msg) == word) {
     				
     					if (getConfig().getBoolean("cancelMessage") == true) {
     						event.setCancelled(true);
