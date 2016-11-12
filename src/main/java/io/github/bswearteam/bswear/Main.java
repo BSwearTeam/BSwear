@@ -28,16 +28,16 @@ import io.github.ramidzkh.KodeAPI.api.YamlConf;
 public class Main extends JavaPlugin implements Listener {
 	public String version = "4.0";
 	public String versionTag = "devBuild";
-	public String about = "BSwear, the Antiswearing plugin for Minecraft, Block 400 swear words!";
+	public String about = "BSwear, the Antiswearing plugin for Minecraft, Block 400 customisable swear words!";
 	
 	public static Permission BypassPerm = new Permission("bswear.bypass");
-	public Permission COMMAND_PERM = new Permission("bswear.command.use");
-    public Permission allPerm = new Permission("bswear.*");
+	public Permission COMMAND_PERM      = new Permission("bswear.command.use");
+    public Permission allPerm           = new Permission("bswear.*");
 
     public FileConfiguration config = new YamlConfiguration();
     public FileConfiguration swears = new YamlConfiguration();
 
-    String prefix = ChatColor.GOLD + "[BSwear] " + ChatColor.GREEN;
+    String prefix = ChatColor.GOLD + "[BSwear] "+ChatColor.GREEN;
     
     private File configf, swearf;
     
@@ -55,14 +55,14 @@ public class Main extends JavaPlugin implements Listener {
         saveDefaultConfig();
         
         pm.registerEvents(this, this);
-        // for console messages BSwear uses consolelog() and not getlogger(), so we can use colors
+        
         boolean showEnabledMessage = getConfig().getBoolean("showEnabledMessage");
         if (showEnabledMessage) {
-        	consolelog(ChatColor.AQUA + "");
-        	consolelog(ChatColor.GREEN + "BBB" + ChatColor.AQUA + " The BSwear Team " + ChatColor.GREEN + "BBB");
-        	consolelog(ChatColor.AQUA + "This server runs BSwear version "+version);
-        	consolelog(ChatColor.AQUA + "BSwear uses the ClusterAPI (by AdityaTD), and the KodeAPI (by Ramidzkh)");
-        	consolelog(ChatColor.AQUA + "");
+        	getLogger().info("");
+        	getLogger().info("[=-=-=] The BSwear Team [=-=-=]");
+        	getLogger().info("This server runs BSwear version "+version);
+        	getLogger().info("BSwear uses the ClusterAPI (by AdityaTD), and the KodeAPI (by Ramidzkh)");
+        	getLogger().info("");
         }
         
         if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == true) {
@@ -153,11 +153,11 @@ public class Main extends JavaPlugin implements Listener {
     public void onChatSwear(AsyncPlayerChatEvent event) {
     	Player player = event.getPlayer();
     	if (!player.hasPermission(BypassPerm)) {
-    		String msg = event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", "");
+    		String msg = replaceAllNotNormal(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
     		String sc = getConfig().getString("command");
     		String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word MIGHT be in your message so we blocked that word!";
     		for (String word : getSwearConfig().getStringList("warnList")) {
-    				if (msg.contains(word) && !msg.toLowerCase().contains("hello")) {
+    				if (msg.contains(" "+word+" ") || msg.contains(" "+word) || msg.contains(word+" ") || replaceAllNotNormal(msg) = word) {
     				
     					if (getConfig().getBoolean("cancelMessage") == true) {
     						event.setCancelled(true);
@@ -225,7 +225,8 @@ public class Main extends JavaPlugin implements Listener {
     		if (sender.hasPermission(COMMAND_PERM) || sender.isOp()) {
     			if (args.length == 0) {
     				sender.sendMessage(prefix);
-    				sender.sendMessage(ChatColor.AQUA + "BSwear is the #1 antiswearing plugin");
+    				sender.sendMessage(ChatColor.AQUA + "BSwear is an antiswearing plugin for Minecraft,");
+					sender.sendMessage(ChatColor.AQUA + "Block 400 customisable swear words!");
                  	sender.sendMessage(ChatColor.AQUA + "Cmd Help: /bswear help");
     			} else if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
     				List<String> words = getConfig().getStringList("words");
@@ -256,9 +257,9 @@ public class Main extends JavaPlugin implements Listener {
     				sender.sendMessage(ChatColor.GOLD + "/bswear remove <word>" + ChatColor.GREEN + " - Unblocks an word");
     				sender.sendMessage(ChatColor.GOLD + "/bswear version" + ChatColor.GREEN + " - Shows the version");
     			} else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
-    				sender.sendMessage(ChatColor.GOLD + "Version:" + ChatColor.GREEN + "BSwearPlus v" + version);
+    				sender.sendMessage(ChatColor.GOLD + "Version:" + ChatColor.GREEN + "BSwear v"+version);
     			} else {
-    				sender.sendMessage(prefix + "Error! please check your args");
+    				sender.sendMessage(prefix + "Error! please check your args OR do \"/bswear help\" for and command list");
     			}
     		} else {
     			sender.sendMessage(prefix + noperm);
@@ -326,4 +327,17 @@ public class Main extends JavaPlugin implements Listener {
     }
     
 
+	/**
+	 * Create an new permission note.
+	 */
+	public Permission newPerm(String permmissionNote){
+		return new Permission(permmissionNote);
+	}
+	
+	/**
+	 * Replaces all --> ! @ # $ % ^ & * ( ) _ + = - ; ' ] [ . , , | ? < > : "
+	 */
+	public String replaceAllNotNormal(String str) {
+        return str.replaceAll("[^\\p{L}\\p{Nd}]+", "");
+    }
 }
