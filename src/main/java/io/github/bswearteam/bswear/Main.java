@@ -33,8 +33,8 @@ public class Main extends JavaPlugin implements Listener {
     public static Permission BypassPerm = new Permission("bswear.bypass");
     public Permission COMMAND_PERM      = new Permission("bswear.command.use");
     public Permission allPerm           = new Permission("bswear.*");
-    public FileConfiguration config = new YamlConfiguration();
-    public FileConfiguration swears = new YamlConfiguration();
+    public FileConfiguration config     = new YamlConfiguration();
+    public FileConfiguration swears     = new YamlConfiguration();
 
     String prefix = ChatColor.GOLD + "[BSwear] "+ChatColor.GREEN;
     
@@ -74,14 +74,14 @@ public class Main extends JavaPlugin implements Listener {
         
         if (!isServerCompatable()) {
         	getLogger().warning("BSwear has not been tested to run on your version of Minecraft");
-        	getLogger().warning("Only: 1.10.x, 1.9.x, 1.8.x, 1.7.x, have been tested to work");
+        	getLogger().warning("Only: 1.11.x, 1.10.x, 1.9.x, 1.8.x, 1.7.x, have been tested to work");
         }
     }
     
     
-    String addword = getConfig().getString("messages.addword");
-    String delword = getConfig().getString("messages.delword");
-    String noperm =  getConfig().getString("messages.noperm");
+    String addword   = getConfig().getString("messages.addword");
+    String delword   = getConfig().getString("messages.delword");
+    String noperm    = getConfig().getString("messages.noperm");
     String swear_msg = getConfig().getString("messages.swearmsg");
     
     
@@ -223,31 +223,31 @@ public class Main extends JavaPlugin implements Listener {
     	if (cmd.getName().equalsIgnoreCase("bswear")) {
     		if (sender.hasPermission(COMMAND_PERM) || sender.isOp()) {
     			if (args.length == 0) {
-    				sender.sendMessage(prefix);
-    				sender.sendMessage(ChatColor.AQUA + "BSwear is an antiswearing plugin for Minecraft,");
-					sender.sendMessage(ChatColor.AQUA + "Block 400 customisable swear words!");
-                 	sender.sendMessage(ChatColor.AQUA + "Cmd Help: /bswear help");
+    			    sender.sendMessage(prefix);
+    			    sender.sendMessage(ChatColor.AQUA + "BSwear is an antiswearing plugin for Minecraft,");
+			    sender.sendMessage(ChatColor.AQUA + "Block 400 customisable swear words!");
+                 	    sender.sendMessage(ChatColor.AQUA + "Cmd Help: /bswear help");
     			} else if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
-    				List<String> words = getConfig().getStringList("words");
-                 	String word = args[1].toLowerCase();
-                 	if (!words.contains(word)) {
-                 		words.add(word);
-                 		getSwearConfig().set("words", words);
-                 		saveSwearConfig();
-                 		IfMessageNull();
-                 		sender.sendMessage(prefix + addword);
-                 	} else {
-                 		sender.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "Error! This word is already blocked!");
-                 	}
+    				List<String> words = getConfig().getStringList("warnList");
+                 		String word = args[1].toLowerCase();
+                 		if (!words.contains(word)) {
+                 			words.add(word);
+                 			getSwearConfig().set("words", words);
+                 			saveSwearConfig();
+                 			IfMessageNull();
+                 			sender.sendMessage(prefix + addword);
+                 		} else {
+                 			sender.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "Error! This word is already blocked!");
+                 		}
     			} else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-    				List<String> words = getConfig().getStringList("words");
+    				List<String> words = getSwearConfig().getStringList("warnList");
     				String word = args[1].toLowerCase();
     				if (words.contains(word)) {
-                	   words.remove(word);
-                	   getSwearConfig().set("words", words);
-                	   saveSwearConfig();
-                	   IfMessageNull();
-                	   sender.sendMessage(prefix + delword);
+                	   		words.remove(word);
+                	  		getSwearConfig().set("warnList", words);
+                	   		saveSwearConfig();
+                	   		IfMessageNull();
+                	  		sender.sendMessage(prefix + delword);
     				} else {
     					sender.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "Error! This word is not blocked!");
     				}
@@ -281,7 +281,7 @@ public class Main extends JavaPlugin implements Listener {
      * */
     public void IfMessageNull() {
     	if (addword == null && delword == null) {
-    		if (getConfig().getString("addword") == null && getConfig().getString("delword") == null) {
+    	    if (getConfig().getString("addword") == null && getConfig().getString("delword") == null) {
                   addword = "Word Added!";
                   delword = "Word Removed";
             } else {
