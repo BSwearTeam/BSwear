@@ -26,14 +26,13 @@ import io.github.bswearteam.bswear.OnJoin;
 import io.github.ramidzkh.KodeAPI.api.YamlConf;
  
 public class Main extends JavaPlugin implements Listener {
-	public String version = "4.0";
-	public String versionTag = "devBuild";
-	public String about = "BSwear, the Antiswearing plugin for Minecraft, Block 400 customisable swear words!";
+    public String version = "4.0";
+    public String versionTag = "devBuild";
+    public String about = "BSwear, the Antiswearing plugin for Minecraft, Block 400 customisable swear words!";
 	
-	public static Permission BypassPerm = new Permission("bswear.bypass");
-	public Permission COMMAND_PERM      = new Permission("bswear.command.use");
+    public static Permission BypassPerm = new Permission("bswear.bypass");
+    public Permission COMMAND_PERM      = new Permission("bswear.command.use");
     public Permission allPerm           = new Permission("bswear.*");
-
     public FileConfiguration config = new YamlConfiguration();
     public FileConfiguration swears = new YamlConfiguration();
 
@@ -66,8 +65,8 @@ public class Main extends JavaPlugin implements Listener {
         }
         
         if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == true) {
-			getLogger().info("[ERROR] You can not have, ban and kick set to true!");
-		}
+		getLogger().info("[ERROR] You can not have, ban and kick set to true!");
+	}
 
         
         getCommand("mute").setExecutor(new Mute(this));
@@ -157,7 +156,7 @@ public class Main extends JavaPlugin implements Listener {
     		String sc = getConfig().getString("command");
     		String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word MIGHT be in your message so we blocked that word!";
     		for (String word : getSwearConfig().getStringList("warnList")) {
-    				if (msg.contains(" "+word+" ") || msg.contains(" "+word) || msg.contains(word+" ") || replaceAllNotNormal(msg) == word) {
+    				if (msg.contains(" "+word+" ") || msg.contains(" "+word) || msg.contains(word+" ") || replaceAllNotNormal(msg).contains(word) {
     				
     					if (getConfig().getBoolean("cancelMessage") == true) {
     						event.setCancelled(true);
