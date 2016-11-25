@@ -234,7 +234,6 @@ public class Main extends JavaPlugin implements Listener {
                  			words.add(word);
                  			getSwearConfig().set("words", words);
                  			saveSwearConfig();
-                 			IfMessageNull();
                  			sender.sendMessage(prefix + addword);
                  		} else {
                  			sender.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "Error! This word is already blocked!");
@@ -246,7 +245,6 @@ public class Main extends JavaPlugin implements Listener {
                 	   		words.remove(word);
                 	  		getSwearConfig().set("warnList", words);
                 	   		saveSwearConfig();
-                	   		IfMessageNull();
                 	  		sender.sendMessage(prefix + delword);
     				} else {
     					sender.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "Error! This word is not blocked!");
@@ -269,30 +267,6 @@ public class Main extends JavaPlugin implements Listener {
     }
     
     
-    
-    
-    
-    /**
-     * Fixes the null messages
-     * 
-     * @author Isaiah Patton
-     * @since v3.1.3
-     * @deprecated (the null messages are Now fixed)
-     * */
-    public void IfMessageNull() {
-    	if (addword == null && delword == null) {
-    	    if (getConfig().getString("addword") == null && getConfig().getString("delword") == null) {
-                  addword = "Word Added!";
-                  delword = "Word Removed";
-            } else {
-            	addword = ChatColor.translateAlternateColorCodes('&', getConfig().getString("addword"));
-            	delword = ChatColor.translateAlternateColorCodes('&', getConfig().getString("delword"));
-            }
-    	}
-    }
-
-    
-    
     /**
      * Gets Bukkit's version
      * 
@@ -309,11 +283,12 @@ public class Main extends JavaPlugin implements Listener {
      * @author BSwear Team
      * */
     public static boolean isServerCompatable() {
-    	return getBukkitVersion().startsWith("v1_11") |//upcoming 1.11
+    	return getBukkitVersion().startsWith("v1_11") |
     			getBukkitVersion().startsWith("v1_10")| 
     			getBukkitVersion().startsWith("v1_9") |
     			getBukkitVersion().startsWith("v1_8") | 
-    			getBukkitVersion().startsWith("v1_7") | 
+    			getBukkitVersion().startsWith("v1_7") |
+		        getBukkitVersion().startsWith("v1_6") | 
     			getBukkitVersion().startsWith("PluginBukkitBridge"); //PluginBukkitBridge is the bukkit plugin loader for Rainbow
     }
     
