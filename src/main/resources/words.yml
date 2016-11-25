@@ -1,7 +1,7 @@
 # BSwearPlus
 # Block swear words
 warnList:
- - 'abruti'
+  - 'abruti'
   - 'address'
   - 'anus'
   - 'arsch'
