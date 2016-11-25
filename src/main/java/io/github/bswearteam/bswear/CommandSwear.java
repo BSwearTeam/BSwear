@@ -30,7 +30,7 @@ public class CommandSwear implements Listener {
     		  String sc = main.getConfig().getString("command");
     		  String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word that MIGHT be in your message so we blocked that word!";
     		  for (String word : main.getSwearConfig().getStringList("words")) {
-    			  if (command.contains(" "+word+" ") || command.contains(" "+word) || command.contains(word+" ") || main.replaceAllNotNormal(command) == word) {
+    			  if (command.contains(" "+word+" ") || command.contains(" "+word) || command.contains(word+" ") || main.replaceAllNotNormal(command).contains(word)) {
   					
     				  if (main.getConfig().getBoolean("cancelMessage") == true) {
     					  event.setCancelled(true);
