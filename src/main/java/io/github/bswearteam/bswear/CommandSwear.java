@@ -24,7 +24,9 @@ public class CommandSwear implements Listener {
    public void onCommandSwear(PlayerCommandPreprocessEvent event) {
       Player player = event.getPlayer();
       String command = event.getMessage().substring(1).toLowerCase();
-      if (command.startsWith("broadcast") || command.startsWith("me") || command.startsWith("tell") || command.startsWith("msg") || command.startsWith("pm")) {
+      if (command.startsWith("broadcast") || command.startsWith("me") || command.startsWith("tell") || command.startsWith("msg") || command.startsWith("pm")
+	 || command.startsWith("r") || command.startsWith("m") || command.startsWith("whisper") || command.startsWith("reply") || command.startsWith("t") || command.startsWith("say")
+	 || command.startsWith("bc")) {
     	  if (!player.hasPermission(CmdSwearBypass) || !player.hasPermission(Main.BypassPerm)) {
     		  command = command.replaceAll("[-_@]", "");
     		  String sc = main.getConfig().getString("command");
