@@ -19,13 +19,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import io.github.bswearteam.bswear.Advertising;
-import io.github.bswearteam.bswear.Mute;
-import io.github.bswearteam.bswear.OnJoin;
-import io.github.ramidzkh.KodeAPI.api.YamlConf;
  
-public class Main extends JavaPlugin implements Listener {
+public class BSwear extends JavaPlugin implements Listener {
     public String version = "4.0";
     public String versionTag = "devBuild";
     public String about = "BSwear, the Antiswearing plugin for Minecraft, Block 400 customisable swear words!";
@@ -89,7 +84,7 @@ public class Main extends JavaPlugin implements Listener {
     /**
      * Gets the words.yml file
      * 
-     * @author Isaiah Patton
+     * @author BSwear Team
      * */
     public FileConfiguration getSwearConfig() {
         return this.swears;
@@ -97,25 +92,21 @@ public class Main extends JavaPlugin implements Listener {
     
     
     
-    
-    
     /**
      * Saves the words.yml file
      * 
-     * @author Isaiah Patton
+     * @author BSwear Team
      * */
     public void saveSwearConfig() {
-    	YamlConf.saveConf(swears, swearf);
+    	saveConf(swears, swearf);
     }
-    
-    
     
     
     
     /**
      * Creates the config.yml and the words.yml
      * 
-     * @author Isaiah Patton
+     * @author BSwear Team
      * */
     private void createFiles() {
         configf = new File(getDataFolder(), "config.yml");
@@ -140,13 +131,10 @@ public class Main extends JavaPlugin implements Listener {
     
     
     
-    
-    
     /**
      * The swear blocker
      * 
-     * @author The BSwear Team
-     * @since v1.0
+     * @author BSwear Team
      * */
     @EventHandler
     public void onChatSwear(AsyncPlayerChatEvent event) {
@@ -204,8 +192,7 @@ public class Main extends JavaPlugin implements Listener {
     /**
      * Adds the Permissions to Bukkit
      * 
-     * @author Isaiah Patton
-     * @since v2.0
+     * @author BSwear Team
      * */    
     public void addPermissions(PluginManager pm) {
         pm.addPermission(BypassPerm);
@@ -216,17 +203,17 @@ public class Main extends JavaPlugin implements Listener {
     /**
      * The /bswear command for BSwear
      * 
-     * @author The BSwear Team
+     * @author BSwear Team
      * @since v2.0
      * */
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
     	if (cmd.getName().equalsIgnoreCase("bswear")) {
-    		if (sender.hasPermission(COMMAND_PERM) || sender.isOp()) {
+    		if (sender.hasPermission(COMMAND_PERM) || sender.isOp() || sender.hasPermission(allPerm)) {
     			if (args.length == 0) {
     			    sender.sendMessage(prefix);
     			    sender.sendMessage(ChatColor.AQUA + "BSwear is an antiswearing plugin for Minecraft,");
-			    sender.sendMessage(ChatColor.AQUA + "Block 400 customisable swear words!");
-                 	    sender.sendMessage(ChatColor.AQUA + "Cmd Help: /bswear help");
+    			    sender.sendMessage(ChatColor.AQUA + "Block 400 customisable swear words!");
+                 	sender.sendMessage(ChatColor.AQUA + "Cmd Help: /bswear help");
     			} else if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
     				List<String> words = getConfig().getStringList("warnList");
                  		String word = args[1].toLowerCase();
@@ -255,6 +242,8 @@ public class Main extends JavaPlugin implements Listener {
     				sender.sendMessage(ChatColor.GOLD + "/bswear version" + ChatColor.GREEN + " - Shows the version");
     			} else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
     				sender.sendMessage(ChatColor.GOLD + "Version:" + ChatColor.GREEN + "BSwear v"+version);
+    			} else if (args.length == 3 && args[0].equalsIgnoreCase("mute")) {
+    			    ((Player) sender).performCommand("mute "+args[1]+" "+args[2]);
     			} else {
     				sender.sendMessage(prefix + "Error! please check your args OR do \"/bswear help\" for and command list");
     			}
@@ -270,10 +259,10 @@ public class Main extends JavaPlugin implements Listener {
     /**
      * Gets Bukkit's version
      * 
-     * @author MrCookieSlime (Slime Fun)
+     * @author MrCookieSlime (Slime Fun plugin)
      * */
-    public static String getBukkitVersion() {
-		return Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
+    public static boolean isRunningVersion(String version) {
+		return Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1).startsWith(version);
     }
     
     
@@ -283,30 +272,9 @@ public class Main extends JavaPlugin implements Listener {
      * @author BSwear Team
      * */
     public static boolean isServerCompatable() {
-    	return getBukkitVersion().startsWith("v1_11") |
-    			getBukkitVersion().startsWith("v1_10")| 
-    			getBukkitVersion().startsWith("v1_9") |
-    			getBukkitVersion().startsWith("v1_8") | 
-    			getBukkitVersion().startsWith("v1_7") |
-		        getBukkitVersion().startsWith("v1_6") | 
-    			getBukkitVersion().startsWith("PluginBukkitBridge"); //PluginBukkitBridge is the bukkit plugin loader for Rainbow
+    	return isRunningVersion("v1_11") | isRunningVersion("v1_10") | isRunningVersion("v1_9") | isRunningVersion("v1_8") | isRunningVersion("v1_7") | isRunningVersion("v1_6") | isRunningVersion("PluginBukkitBridge");    
     }
-    
-    
-    /**
-     * send an message to the console!
-     * */
-    public void consolelog(String message) {
-    	Bukkit.getServer().getConsoleSender().sendMessage(message);
-    }
-    
-
-	/**
-	 * Create an new permission note.
-	 */
-	public Permission newPerm(String permmissionNote){
-		return new Permission(permmissionNote);
-	}
+	
 	
 	/**
 	 * Replaces all --> ! @ # $ % ^ & * ( ) _ + = - ; ' ] [ . , , | ? < > : "
@@ -314,4 +282,17 @@ public class Main extends JavaPlugin implements Listener {
 	public String replaceAllNotNormal(String str) {
         return str.replaceAll("[^\\p{L}\\p{Nd}]+", "");
     }
+	
+	
+	/**
+	 * Save config files!
+	 */
+	public static void saveConf(FileConfiguration config, File file) {
+	    try {
+	        config.save(file);
+	    } catch (IOException e) {
+	        System.out.println("[BSwear][ERROR] Cant save file "+file.getName()+"! Error message: "+e.getMessage());
+        } 
+    }
+
 }

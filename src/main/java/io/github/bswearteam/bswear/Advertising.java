@@ -5,18 +5,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.permissions.Permission;
-//BSwear Classes
-import io.github.bswearteam.bswear.Main;
 
 /**
- *
  * @Author TheBSwearTeam
  */
 public class Advertising implements Listener {
 
-    private Main main;
+    private BSwear main;
 
-    public Advertising(Main m) {
+    public Advertising(BSwear m) {
 		main = m;
 	}
 

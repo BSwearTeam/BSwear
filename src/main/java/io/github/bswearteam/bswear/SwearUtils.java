@@ -1,15 +1,17 @@
 package io.github.bswearteam.bswear;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 public class SwearUtils {
 	
-	private static Main main; // Hook in to main class
+	private static BSwear main; // Hook in to main class
 	
 	
-	public SwearUtils(Main m) {
+	public SwearUtils(BSwear m) {
 		main = m;
 	}
 	
@@ -83,4 +85,35 @@ public class SwearUtils {
 		SwearUtils.kickSwearer(player);
 		SwearUtils.banSwearer(player);
 	}
+	
+	
+    public static HashMap <String, Double> sm = new HashMap<>(); // {PlayerName, Amount}
+    
+    // setSwearNu
+        public static void setSwearNum(String player, double amount) {
+            sm.put(player, amount);
+        }
+        
+        public static void setSwearNum(Player player, double amount) {
+            setSwearNum(player.getName(), amount);
+        }
+	
+    // getPlrSwears
+	    public static Double getPlrSwears(String player) {
+	        return sm.get(player);
+	    }
+	
+	    public static Double getPlrSwears(Player player) {
+	        return getPlrSwears(player.getName());
+	    }
+	
+	// hasSweared
+	    public static boolean hasSweared(String player) {
+	        return sm.containsKey(player);
+	    }
+	    
+	    public static boolean hasSweared(Player player) {
+            return hasSweared(player.getName());
+        }
+	
 }

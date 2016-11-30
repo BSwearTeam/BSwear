@@ -7,13 +7,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.permissions.Permission;
-import io.github.bswearteam.bswear.Main;
+import io.github.bswearteam.bswear.BSwear;
 
 public class CommandSwear implements Listener {
 
-    private Main main;
+    private BSwear main;
 
-    public CommandSwear(Main m) {
+    public CommandSwear(BSwear m) {
 		main = m;
 	}
 
@@ -26,8 +26,8 @@ public class CommandSwear implements Listener {
       String command = event.getMessage().substring(1).toLowerCase();
       if (command.startsWith("broadcast") || command.startsWith("me") || command.startsWith("tell") || command.startsWith("msg") || command.startsWith("pm")
 	 || command.startsWith("r") || command.startsWith("m") || command.startsWith("whisper") || command.startsWith("reply") || command.startsWith("t") || command.startsWith("say")
-	 || command.startsWith("bc")) {
-    	  if (!player.hasPermission(CmdSwearBypass) || !player.hasPermission(Main.BypassPerm)) {
+	 || command.startsWith("bc") || command.startsWith("tellraw") || command.startsWith("title")) {
+    	  if (!player.hasPermission(CmdSwearBypass) || !player.hasPermission(BSwear.BypassPerm)) {
     		  command = command.replaceAll("[-_@]", "");
     		  String sc = main.getConfig().getString("command");
     		  String swearmsg = ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD + "We've detected a swear word that MIGHT be in your message so we blocked that word!";

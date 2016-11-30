@@ -3,7 +3,7 @@
  * All Rights Reserved.
  * Do not copy or redistribute.
  * CODE FROM: CLUSTERAPI BY ADITYATD.
- * Used with permmisson.
+ * Used with permisson.
  **/
 
 package io.github.bswearteam.bswear;

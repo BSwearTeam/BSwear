@@ -4,11 +4,17 @@
 # start message
 showEnabledMessage: true
 
+# Enable join Message
+showJoinMessage: true
+
 
 # cancel message,
 #   true = cancel the message
 #   false = replace the swear word (best to use this)
 cancelMessage: false
+
+# max warnings
+maxWarnings: 5
 
 
 # The Command to be ran when somewon swears
@@ -32,13 +38,13 @@ banSwearer: false
 #   false = Does not use the TitlesAPI
 sendTitle: true
 
+
 # Messages,
 messages:
     addword: 'Word Added'
     delword: 'Word Removed'
     noperm: 'No Permission'
     swearmsg: 'No Swearing, Please'
-
 
 
 # Block advertising,

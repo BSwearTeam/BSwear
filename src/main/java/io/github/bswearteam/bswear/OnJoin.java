@@ -4,20 +4,26 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.entity.Player;
 
 public class OnJoin implements Listener {
 
-    private Main main;
+    private BSwear main;
 
-	public OnJoin(Main m) {
+	public OnJoin(BSwear m) {
 		main = m;
 	}
 	
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        String JoinPrefix = main.prefix;
-        player.sendMessage(JoinPrefix + ChatColor.GRAY + "Our Antiswearing filter is protecting this server!");
+        if (main.getConfig().getBoolean("showJoinMessage") == true) {
+            double plrWarnings = 0;
+            
+            if (!SwearUtils.hasSweared(e.getPlayer().getName())) {
+                plrWarnings = SwearUtils.getPlrSwears(e.getPlayer().getName());
+            }
+            
+            e.getPlayer().sendMessage(main.prefix + ChatColor.GRAY + "Our Antiswearing filter is protecting this server!");
+            e.getPlayer().sendMessage(main.prefix + ChatColor.GRAY + "You have "+plrWarnings+" warnings out of max "+main.getConfig().getDouble("maxWarnings"));
+        }
     }
 }

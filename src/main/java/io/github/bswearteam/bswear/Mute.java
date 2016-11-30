@@ -18,11 +18,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public class Mute implements Listener, CommandExecutor {
     
-    @SuppressWarnings("unused")
-	private Main main;
-    public Mute(Main m) {
+	@SuppressWarnings("unused") 
+	private BSwear main;
+    public Mute(BSwear m) {
 		main = m;
 	}
+    
     public ArrayList<Player> mute = new ArrayList<Player>();
    
     @EventHandler
