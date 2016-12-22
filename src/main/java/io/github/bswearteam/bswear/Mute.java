@@ -1,12 +1,10 @@
 package io.github.bswearteam.bswear;
 
-import java.util.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,22 +12,19 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /**
  *
- * @Author TheBSwearTeam
+ * @Author BSwearTeam
  */
 public class Mute implements Listener, CommandExecutor {
     
-	@SuppressWarnings("unused") 
 	private BSwear main;
     public Mute(BSwear m) {
 		main = m;
 	}
-    
-    public ArrayList<Player> mute = new ArrayList<Player>();
-   
+
     @EventHandler
     public void onChatMute(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (mute.contains(player)) {
+        if (main.getMutedConfig().getBoolean("muted."+player.getName().toLowerCase())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage("[BSwearMuteManger] " + "You are muted");
         }
@@ -44,7 +39,7 @@ public class Mute implements Listener, CommandExecutor {
                         sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
                         return true;
                     } else {
-                        mute.add(mutePlayer);
+                        main.getMutedConfig().set("muted."+mutePlayer.getName().toLowerCase(), true);
                         sender.sendMessage(ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " muted!");
                         return true;
                     }
@@ -54,7 +49,7 @@ public class Mute implements Listener, CommandExecutor {
                         sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
                         return true;
                     } else {
-                        mute.remove(mutePlayer);
+                        main.getMutedConfig().set("muted."+mutePlayer.getName().toLowerCase(), null);
                         sender.sendMessage("[BSwearMuteManger] " + ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " unmuted!");
                         return true;
                     }

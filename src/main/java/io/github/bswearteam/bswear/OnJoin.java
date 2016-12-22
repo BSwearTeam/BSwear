@@ -16,10 +16,10 @@ public class OnJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (main.getConfig().getBoolean("showJoinMessage") == true) {
-            double plrWarnings = 0;
+            int plrWarnings = 0;
             
-            if (!SwearUtils.hasSweared(e.getPlayer().getName())) {
-                plrWarnings = SwearUtils.getPlrSwears(e.getPlayer().getName());
+            if (!SwearUtils.hasSweared(e.getPlayer())) {
+                plrWarnings = SwearUtils.getPlrSwears(e.getPlayer());
             }
             
             e.getPlayer().sendMessage(main.prefix + ChatColor.GRAY + "Our Antiswearing filter is protecting this server!");

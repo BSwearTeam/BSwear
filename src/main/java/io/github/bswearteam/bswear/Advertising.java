@@ -24,8 +24,6 @@ public class Advertising implements Listener {
       Player player = event.getPlayer();
       if (!player.hasPermission(ADVERTISING_PERM)) {
          String msg = event.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
-         String swearer = player.getName();
-         String prefix = main.getConfig().getString("prefix");
          for (String advert : main.getConfig().getStringList("advertising")) {
             if (msg.contains(advert)) {
                 player.sendMessage("No Advertising");

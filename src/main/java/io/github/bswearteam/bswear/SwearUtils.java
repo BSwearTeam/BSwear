@@ -10,12 +10,8 @@ public class SwearUtils {
 	
 	private static BSwear main; // Hook in to main class
 	
-	
 	public SwearUtils(BSwear m) {
 		main = m;
-	}
-	
-	public SwearUtils(){
 	}
 	
 	/**
@@ -80,40 +76,47 @@ public class SwearUtils {
 	 * Checks every thing!
 	 * */
 	public static void checkAll(String sc, Player player) {
+	    if (hasSweared(player)) {
+	        setSwearNum(player, getPlrSwears(player) + 1);
+	    } else {
+	        setSwearNum(player, 1);
+	    }
+	    
 		SwearUtils.runCommand(sc, player);
 		SwearUtils.sendTitle(player);
 		SwearUtils.kickSwearer(player);
 		SwearUtils.banSwearer(player);
 	}
 	
-	
-    public static HashMap <String, Double> sm = new HashMap<>(); // {PlayerName, Amount}
     
-    // setSwearNu
-        public static void setSwearNum(String player, double amount) {
-            sm.put(player, amount);
-        }
-        
-        public static void setSwearNum(Player player, double amount) {
-            setSwearNum(player.getName(), amount);
-        }
+	/**
+     * setSwearNum
+     * 
+     * @param player The Player
+     * @param amount The amount.
+     */ 
+    public static void setSwearNum(Player player, int amount) {
+        main.getSwearersConfig().set("swearers."+player.getName()+".amount", amount);
+        main.getSwearersConfig().set("swearers."+player.getName()+".hasSweared", true);
+    }
 	
-    // getPlrSwears
-	    public static Double getPlrSwears(String player) {
-	        return sm.get(player);
-	    }
+    /**
+     * getPlrSwears
+     * 
+     * @param player The Player
+     * @return The amount of times {@link player} has sweared.
+     */ 
+	public static int getPlrSwears(Player player) {
+	    return main.getSwearersConfig().getInt("swearers."+player.getName()+".amount");
+	}
 	
-	    public static Double getPlrSwears(Player player) {
-	        return getPlrSwears(player.getName());
-	    }
-	
-	// hasSweared
-	    public static boolean hasSweared(String player) {
-	        return sm.containsKey(player);
-	    }
-	    
-	    public static boolean hasSweared(Player player) {
-            return hasSweared(player.getName());
-        }
-	
+	/**
+	 * hasSwearered
+	 * 
+	 * @param player The Player
+	 * @return true if player has sweared befour false if not.
+	 */
+	public static boolean hasSweared(Player player) {
+	    return main.getSwearersConfig().getBoolean("swearers."+player.getName()+".hasSweared");
+	}
 }
