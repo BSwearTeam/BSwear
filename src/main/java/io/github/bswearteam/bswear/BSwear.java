@@ -47,6 +47,7 @@ public class BSwear extends JavaPlugin implements Listener {
     	PluginManager pm = Bukkit.getServer().getPluginManager();
     	pm.addPermission(BypassPerm);
         pm.addPermission(COMMAND_PERM);
+        pm.addPermission(allPerm);
 
         configf = new File(getDataFolder(), "config.yml");
         swearf = new File(getDataFolder(), "words.yml");
@@ -85,7 +86,7 @@ public class BSwear extends JavaPlugin implements Listener {
 
         if (getConfig().getBoolean("showEnabledMessage")) {
         	getLogger().info("");
-        	getLogger().info("[=-=-=] the B-Swear Team [=-=-=]");
+        	getLogger().info("[=-=-=] the BSwear Team [=-=-=]");
         	getLogger().info("This server runs BSwear version "+version);
         	getLogger().info("BSwear uses the ClusterAPI (by AdityaTD)");
         	getLogger().info("");
@@ -96,6 +97,12 @@ public class BSwear extends JavaPlugin implements Listener {
             getConfig().set("banSwearer", false);
         }
 
+        if (getConfig().getString("messages.prefix") == null) {
+            getConfig().set("messages.prefix", "&6[BSwear]&2");
+        } else {
+            prefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")) + " ";
+        }
+        
         getCommand("mute").setExecutor(new Mute(this));
         registerEvents(this, this, new OnJoin(this), new Mute(this), new Advertising(this));
     }
@@ -119,8 +126,16 @@ public class BSwear extends JavaPlugin implements Listener {
     	if (!event.getPlayer().hasPermission(BypassPerm)) {
     		String message = replaceAllNotNormal(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
 
+
     		for (String word : getSwearConfig().getStringList("warnList")) {
-                if (message.contains(" "+word+" ") || message.contains(" "+word) || message.contains(word+" ") || message == word) {
+          	    boolean a = false;
+                for (String split : message.split(" ")) {
+                    if (split.contains(word)) {
+                        a = true;
+                    }
+                }
+    		    
+                if (a == true || message.contains(" "+word+" ") || message.contains(" "+word) || message.contains(word+" ") || message == word) {
 
                     if (getConfig().getBoolean("cancelMessage") == true) {
     					event.setCancelled(true); // Cancel Message
@@ -141,9 +156,7 @@ public class BSwear extends JavaPlugin implements Listener {
      * @author The BSwear Team
      */
     public void onDisable(){
-    	getLogger().info("--------------------------");
-    	getLogger().info("- BSwear is now disabled -");
-    	getLogger().info("--------------------------");
+    	getLogger().info("BSwear is now disabled");
     }
 
 
@@ -194,15 +207,42 @@ public class BSwear extends JavaPlugin implements Listener {
     					sender.sendMessage(prefix + ChatColor.RED + ChatColor.BOLD + "Error! This word is not blocked!");
     				}
     			} else if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
+    			    sender.sendMessage(prefix + " Command Help!");
     				sender.sendMessage(ChatColor.GOLD + "/bswear add <word>" + ChatColor.GREEN + " - Blocks an word");
     				sender.sendMessage(ChatColor.GOLD + "/bswear remove <word>" + ChatColor.GREEN + " - Unblocks an word");
+    				sender.sendMessage(ChatColor.GOLD + "/bswear clear" + ChatColor.GREEN + " - Unblocks all words");
     				sender.sendMessage(ChatColor.GOLD + "/bswear version" + ChatColor.GREEN + " - Shows the version");
+    				sender.sendMessage(ChatColor.GOLD + "/bswear wordlist" + ChatColor.GREEN + " - Shows the blocked words");
+    				sender.sendMessage(ChatColor.GOLD + "/bswear prefix" + ChatColor.GREEN + " - Set the message prefix");
     			} else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
-    				sender.sendMessage(ChatColor.GOLD + "Version:" + ChatColor.GREEN + "BSwear v"+version);
+    				sender.sendMessage(ChatColor.GOLD + "Version:" + ChatColor.GREEN + "BSwear v"+version+"-"+versionTag);
     			} else if (args.length == 3 && args[0].equalsIgnoreCase("mute")) {
     			    ((Player) sender).performCommand("mute "+args[1]+" "+args[2]);
+    			} else if (args.length == 1 && args[0].equalsIgnoreCase("wordlist")) {
+    			    List<String> words = getSwearConfig().getStringList("warnList");
+    			    String message = "Blocked Words: ";
+    		        for (String w : words) {
+    		            message = message + w;
+    		            
+    		            if (!(w == words.get(words.size() - 1))) {
+    		                message = message + ", ";
+    		            }
+    		        }
+    			    sender.sendMessage(message);
+    			} else if (args.length == 1 && args[0].equalsIgnoreCase("clear")) {
+    			    List<String> words = getSwearConfig().getStringList("warnList");
+    			    for (String word : words) {
+    			        words.remove(word);
+                        getSwearConfig().set("warnList", words);
+                        saveSwearConfig();
+                        sender.sendMessage(prefix + "All blocked words have been unblocked!");
+    			    }
+    			} else if (args.length == 2 && args[0].equalsIgnoreCase("prefix")) {
+    			    getConfig().set("messages.prefix", args[1]);
+    			    saveConfig();
+    			    prefix = ChatColor.translateAlternateColorCodes('&', args[1] + " ");
     			} else {
-    				sender.sendMessage(prefix + "Error! please check your args OR do \"/bswear help\" for and command list");
+    				sender.sendMessage(prefix + "Error! please check your args OR do \"/bswear help\" for an command list");
     			}
     		} else {
     			sender.sendMessage(prefix + getConfig().getString("messages.noperm"));
@@ -230,6 +270,5 @@ public class BSwear extends JavaPlugin implements Listener {
 	    } catch (IOException e) {
 	        System.out.println("[BSwear][ERROR] Cant save file "+file.getName()+"! Error message: "+e.getMessage());
         } 
-    }
-
+	}
 }

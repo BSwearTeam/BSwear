@@ -1,7 +1,5 @@
 package io.github.bswearteam.bswear;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;

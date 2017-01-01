@@ -2,6 +2,10 @@
 /bin/
 /classes/
 
+# Maven
+/maven-status/
+/maven-archiver/
+/generated-sources/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

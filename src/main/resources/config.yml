@@ -45,6 +45,7 @@ messages:
     delword: 'Word Removed'
     noperm: 'No Permission'
     swearmsg: 'No Swearing, Please'
+    prefix: '&6[BSwear]&2'
 
 
 # Block advertising,
