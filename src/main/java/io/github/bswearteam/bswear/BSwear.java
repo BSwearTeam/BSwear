@@ -21,7 +21,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
  
 public class BSwear extends JavaPlugin implements Listener {
-    public String version = "4.0";
+    public String version = "4.1";
     public String versionTag = "release";
     public String about = "BSwear, an Antiswearing plugin for Minecraft, Block 400 customisable swear words!";
 	
