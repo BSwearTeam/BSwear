@@ -20,10 +20,33 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import net.milkbowl.vault.economy.Economy;
  
 public class BSwear extends JavaPlugin implements Listener {
-    public PluginDescriptionFile pdf = Bukkit.getServer().getPluginManager().getPlugin("BSwear").getDescription();
+    public static Economy econ = null;
+
+    /**
+     * setup Vault 
+     */
+    private boolean setupEconomy() {
+        if (this.getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = this.getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = (Economy)rsp.getProvider();
+        if (econ != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public PluginDescriptionFile pdf = this.getDescription();
     public String version = pdf.getVersion();
     public String about = pdf.getDescription();
 	
@@ -90,6 +113,16 @@ public class BSwear extends JavaPlugin implements Listener {
         	getLogger().info("");
         }
 
+        // setup Vault
+        if (setupEconomy()) {
+            getLogger().info("Hooked into Vault!");
+        } else {
+            getLogger().info("------");
+            getLogger().info("The plugin \"Vault\" is not installed!");
+            getLogger().info("Please install it for BSwear to use your Economy!");
+            getLogger().info("------");
+        }
+        
         // Checks if both ban and kick are set to true
         if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == true) {
             getLogger().info("[ERROR] You can not have, both ban and kick set to true! setting ban to false...");
@@ -213,7 +246,6 @@ public class BSwear extends JavaPlugin implements Listener {
                     sender.sendMessage(ChatColor.GOLD + "/bswear wordlist" + ChatColor.GREEN + " - Shows the blocked words");
                     sender.sendMessage(ChatColor.GOLD + "/bswear prefix" + ChatColor.GREEN + " - Set the message prefix");
                     sender.sendMessage(ChatColor.GOLD + "/bswear swearers" + ChatColor.GREEN + " - Show all players who sweared");
-
     			} else if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
     				List<String> words = getSwearConfig().getStringList("warnList");
                  		String word = args[1].toLowerCase();
