@@ -1,40 +1,23 @@
 /**
  * @Author: Aditya / AdityaTD
- * All Rights Reserved.
- * Do not copy or redistribute.
+ * MIT Licence
  * CODE FROM: CLUSTERAPI BY ADITYATD.
  * Used with permisson.
  **/
 
 package io.github.bswearteam.bswear;
 
+import java.lang.reflect.Constructor;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.lang.reflect.Constructor;
 
 public class TitlesAPI extends JavaPlugin implements Listener{
 	
 	public static boolean works = true;
 	public static String nmsver;
-	
-	//BSwear, start
-	public static void sendTitle(Player player, String title, String subtitle) {
-		sendFullTitle(player, 10, 80, 10, title, subtitle);
-	}
-	
-	public static void sendTitle(Player player, String title, String subtitle, boolean useBSwearMessageColors) {
-		if (useBSwearMessageColors){
-			sendTitle(player, ChatColor.DARK_RED + title, ChatColor.GOLD + subtitle);
-		} else {
-			sendTitle(player, title, subtitle);
-		}
-	}
-	//BSwear, end
-	
 	
     @Deprecated
     public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String message) {

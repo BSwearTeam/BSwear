@@ -1,6 +1,7 @@
 package io.github.bswearteam.bswear;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
@@ -44,7 +45,7 @@ public class SwearUtils {
 	 * */
 	public static void sendTitle(Player player) {
 		if (main.getConfig().getBoolean("sendTitle") == true) {
-			TitlesAPI.sendTitle(player, "ERROR", "No Swearing", true);
+			sendTitle(player, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing", true);
 		}
 	}
 	
@@ -94,8 +95,8 @@ public class SwearUtils {
      * @param amount The amount.
      */ 
     public static void setSwearNum(Player player, int amount) {
-        main.getSwearersConfig().set("swearers."+player.getName()+".amount", amount);
-        main.getSwearersConfig().set("swearers."+player.getName()+".hasSweared", true);
+        main.swearers.set("swearers."+player.getName()+".amount", amount);
+        main.swearers.set("swearers."+player.getName()+".hasSweared", true);
     }
 	
     /**
@@ -105,7 +106,7 @@ public class SwearUtils {
      * @return The amount of times {@link player} has sweared.
      */ 
 	public static int getPlrSwears(Player player) {
-	    return main.getSwearersConfig().getInt("swearers."+player.getName()+".amount");
+	    return main.swearers.getInt("swearers."+player.getName()+".amount");
 	}
 	
 	/**
@@ -115,6 +116,19 @@ public class SwearUtils {
 	 * @return true if player has sweared befour false if not.
 	 */
 	public static boolean hasSweared(Player player) {
-	    return main.getSwearersConfig().getBoolean("swearers."+player.getName()+".hasSweared");
+	    return main.swearers.getBoolean("swearers."+player.getName()+".hasSweared");
 	}
+	
+	@SuppressWarnings("deprecation")
+	public static void sendTitle(Player player, String title, String subtitle) {
+        TitlesAPI.sendFullTitle(player, 10, 80, 10, title, subtitle);
+    }
+    
+    public static void sendTitle(Player player, String title, String subtitle, boolean useBSwearMessageColors) {
+        if (useBSwearMessageColors){
+            sendTitle(player, ChatColor.DARK_RED + title, ChatColor.GOLD + subtitle);
+        } else {
+            sendTitle(player, title, subtitle);
+        }
+    }
 }

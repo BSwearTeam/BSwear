@@ -24,7 +24,7 @@ public class Mute implements Listener, CommandExecutor {
     @EventHandler
     public void onChatMute(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (main.getMutedConfig().getBoolean("muted."+player.getName().toLowerCase())) {
+        if (main.muted.getBoolean("muted."+player.getName().toLowerCase())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage("[BSwearMuteManger] " + "You are muted");
         }
@@ -39,7 +39,7 @@ public class Mute implements Listener, CommandExecutor {
                         sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
                         return true;
                     } else {
-                        main.getMutedConfig().set("muted."+mutePlayer.getName().toLowerCase(), true);
+                        main.muted.set("muted."+mutePlayer.getName().toLowerCase(), true);
                         sender.sendMessage(ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " muted!");
                         return true;
                     }
@@ -49,7 +49,7 @@ public class Mute implements Listener, CommandExecutor {
                         sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
                         return true;
                     } else {
-                        main.getMutedConfig().set("muted."+mutePlayer.getName().toLowerCase(), null);
+                        main.muted.set("muted."+mutePlayer.getName().toLowerCase(), null);
                         sender.sendMessage("[BSwearMuteManger] " + ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " unmuted!");
                         return true;
                     }
