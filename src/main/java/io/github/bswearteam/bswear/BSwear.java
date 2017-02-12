@@ -6,11 +6,9 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -21,11 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class BSwear extends JavaPlugin implements Listener {
     public boolean devBuild = true;
-    
+
     public PluginDescriptionFile pdf = this.getDescription();
     public String version = pdf.getVersion();
-    public String about = pdf.getDescription();
-    
+
     public static Permission BypassPerm = new Permission("bswear.bypass");
     public Permission COMMAND_PERM      = new Permission("bswear.command.use");
     public Permission allPerm           = new Permission("bswear.*");
@@ -34,7 +31,7 @@ public class BSwear extends JavaPlugin implements Listener {
     public FileConfiguration swearers   = new YamlConfiguration();
     public FileConfiguration muted      = new YamlConfiguration();
     public String prefix = ChatColor.GOLD + "[BSwear] "+ChatColor.GREEN;
-    private File configf, swearf, swearersf, mutedf;
+    private File configf,swearf,swearersf,mutedf;
 
     /**
      * code that runs when BSwear is enabled
@@ -42,7 +39,7 @@ public class BSwear extends JavaPlugin implements Listener {
      * @author The BSwear Team
      * */
     public void onEnable() {
-        if (devBuild) version = "21117b";
+        if (devBuild) version = "21117c";
 
         PluginManager pm = Bukkit.getServer().getPluginManager();
         pm.addPermission(BypassPerm);
@@ -116,7 +113,6 @@ public class BSwear extends JavaPlugin implements Listener {
 
             for (String word : getSwearConfig().getStringList("warnList")) {
                 boolean a = false;
-
                 String[] messageAsArray = message.split(" ");
 
                 int messageLength = messageAsArray.length;
@@ -124,20 +120,17 @@ public class BSwear extends JavaPlugin implements Listener {
                     String partOfMessage = messageAsArray[i];
                     StringBuilder strBuilder = new StringBuilder();
                     char[] messageAsCharArray = partOfMessage.toLowerCase().toCharArray();
-                    for (int h = 0; h < messageAsCharArray.length;) {
-                        char character = messageAsCharArray[h];
-                        if (character >= '0' && character <= '9' || character >= 'a' && character <= 'z') {
-                            strBuilder.append(character);
-                        }
+                    for(int h=0;h<messageAsCharArray.length;){
+                        char character=messageAsCharArray[h];
+                        if(character>='0'&&character<='9'||character>='a'&&character<='z') strBuilder.append(character);
                         h++;
                     }
 
                     if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
- 
                     i++;
                 }
 
-                if (a || message == word) {
+                if (a) {
 
                     if (getConfig().getBoolean("cancelMessage") == true) {
                         event.setCancelled(true); // Cancel Message
@@ -158,60 +151,27 @@ public class BSwear extends JavaPlugin implements Listener {
         getLogger().info("BSwear is now disabled");
     }
 
-    /**
-     * @author BSwear Team
-     */
     public static void registerEvents(org.bukkit.plugin.Plugin plugin, Listener... listeners) {
-        for (Listener listener : listeners) {
-            Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
-        }
+        for (Listener listener : listeners) Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
     }
 
     /**
-     * Replaces all --> ! @ # $ % ^ & * ( ) _ + = - ; ' ] [ . , , | ? < > : "
+     * Replaces all non-words and non-numbers.
      */
     public String replaceAllNotNormal(String str) {
-        return str.replaceAll("[^\\p{L}\\p{Nd}]", "").replaceAll("[ * . - = + : ]", "");
+        return str.replaceAll("[^\\p{L}\\p{Nd}]","").replaceAll("[ * . - = + : ]","").replaceAll("[%&*()$#!-_@]","");
     }
 
-
-    /**
-     * Save config file!
-     */
     public void saveConf(FileConfiguration config, File file) {
         try {
             config.save(file);
         } catch (IOException e) {
-            getLogger().info("[ERROR] Cant save file "+file.getName()+"! Error message: "+e.getMessage());
+            e.printStackTrace();
+            getLogger().info("[ERROR] Cant save "+file.getName());
         } 
     }
 
-    protected void showCommandUsage(CommandSender s) {
-        String[] options = {
-                "add <word> - Blocks word",
-                "remove <word> - Unblocks word",
-                "clear - Unblocks all words",
-                "version - Show plugin version",
-                "wordlist - Show all blocked words",
-                "prefix - Sets the prefix",
-                "swearers - Show all swearers",
-                "useTitles - set using title on swear"
-                };
-        for (String option : options) {
-            String[] strs = option.split("-");
-            sendMessage(s, ChatColor.GOLD + "/bswear " + strs[0] + ChatColor.GREEN + " - " + strs[1]);
-        }
-    }
-    
-    public void sendMessage(CommandSender s, String message) {
-        if (s instanceof Player) s.sendMessage(message);
-        else s.sendMessage(ChatColor.stripColor(message));
-    }
-
-    private void resourceSave(File file, String fileName) {
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            saveResource(fileName, false);
-        }
+    private void resourceSave(File file,String fileName){
+        if(!file.exists()){file.getParentFile().mkdirs();saveResource(fileName,false);}
     }
 }

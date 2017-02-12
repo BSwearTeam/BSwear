@@ -3,8 +3,7 @@
  * MIT Licence
  * CODE FROM: CLUSTERAPI BY ADITYATD.
  * Used with permisson.
- **/
-
+ */
 package io.github.bswearteam.bswear;
 
 import java.lang.reflect.Constructor;

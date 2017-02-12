@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CommandSwear implements Listener {
     private BSwear main;
-
     public CommandSwear(BSwear m) {
 		main = m;
 	}

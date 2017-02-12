@@ -11,55 +11,49 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /**
- *
  * @Author BSwearTeam
  */
 public class Mute implements Listener, CommandExecutor {
-    
-	private BSwear main;
-    public Mute(BSwear m) {
-		main = m;
-	}
+    private BSwear m;
+    public Mute(BSwear b){m = b;}
 
     @EventHandler
     public void onChatMute(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-        if (main.muted.getBoolean("muted."+player.getName().toLowerCase())) {
+        if (m.muted.getBoolean("muted."+event.getPlayer().getName().toLowerCase())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("[BSwearMuteManger] " + "You are muted");
+            event.getPlayer().sendMessage(m.prefix + "You are muted");
         }
     }
-    @SuppressWarnings("deprecation")
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
-            if (sender.hasPermission("bswear.command.mute") || sender.isOp()) {
-                if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
-                    Player mutePlayer = Bukkit.getPlayer(args[1]);
-                    if (mutePlayer == null) {
-                        sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
-                        return true;
-                    } else {
-                        main.muted.set("muted."+mutePlayer.getName().toLowerCase(), true);
-                        sender.sendMessage(ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " muted!");
-                        return true;
-                    }
-                } else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-                    Player mutePlayer = Bukkit.getPlayer(args[1]);
-                    if (mutePlayer == null) {
-                        sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
-                        return true;
-                    } else {
-                        main.muted.set("muted."+mutePlayer.getName().toLowerCase(), null);
-                        sender.sendMessage("[BSwearMuteManger] " + ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " unmuted!");
-                        return true;
-                    }
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (sender.hasPermission("bswear.command.mute") || sender.isOp()) {
+            if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
+                Player mutePlayer = Bukkit.getPlayer(args[1]);
+                if (mutePlayer == null) {
+                    sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
+                    return true;
                 } else {
-                    sender.sendMessage(ChatColor.RED + "Try /mute <add/remove> <player>");
+                    m.muted.set("muted."+mutePlayer.getName().toLowerCase(), true);
+                    sender.sendMessage(ChatColor.RED+ mutePlayer.getName() +ChatColor.RED + " is now muted!");
+                    return true;
+                }
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
+                Player mutePlayer = Bukkit.getPlayer(args[1]);
+                if (mutePlayer == null) {
+                    sender.sendMessage(ChatColor.YELLOW +args[1]+ ChatColor.RED  + " is not online");
+                    return true;
+                } else {
+                    m.muted.set("muted."+mutePlayer.getName().toLowerCase(), null);
+                    sender.sendMessage(m.prefix + ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " unmuted!");
                     return true;
                 }
             } else {
-            sender.sendMessage("No permission");
+                sender.sendMessage(ChatColor.RED + "Try /mute <add/remove> <player>");
+                return true;
             }
+        } else {
+            sender.sendMessage("No permission");
+        }
         return false;
     }
 }
