@@ -10,13 +10,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BSwearCommand implements CommandExecutor {
-
     public BSwear m;
-    public BSwearCommand(BSwear b) {this.m = b;}
+    public BSwearCommand(BSwear b){this.m = b;}
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("bswear")) {
-            if (sender.hasPermission(m.COMMAND_PERM) || sender.isOp() || sender.hasPermission(m.allPerm)) {
+            if (sender.hasPermission(m.CommandPerm) || sender.isOp() || sender.hasPermission(m.allPerm)) {
                 if (args.length == 0) {
                     sendMessage(sender, m.prefix);
                     sendMessage(sender, ChatColor.AQUA + "BSwear v" + m.version);

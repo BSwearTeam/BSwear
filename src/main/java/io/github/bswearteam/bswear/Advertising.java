@@ -1,32 +1,32 @@
 package io.github.bswearteam.bswear;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.permissions.Permission;
 
-/**
- * @Author TheBSwearTeam
- */
 public class Advertising implements Listener {
+    private BSwear m;
+    public Advertising(BSwear b) { m = b;}
 
-    private BSwear main;
-
-    public Advertising(BSwear m) {
-		main = m;
-	}
-
-   public final Permission ADVERTISING_PERM = new Permission("bswear.advertising.bypass");
-   
-   @EventHandler
-   public void OnChatAdvertising(AsyncPlayerChatEvent event) {
-      Player player = event.getPlayer();
-      if (!player.hasPermission(ADVERTISING_PERM)) {
-         String msg = event.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
-         for (String advert : main.getConfig().getStringList("advertising")) {
-            if (msg.contains(advert)) {
-                player.sendMessage("No Advertising");
+    @EventHandler
+    public void OnChatAdvertising(AsyncPlayerChatEvent e) {
+      Player p = e.getPlayer();
+      if (!p.hasPermission(m.AdvertisingBypass)) {
+         String msg = e.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
+         for (String ad : m.getConfig().getStringList("advertising")) {
+            if (m.ifHasWord(msg, ad)) {
+                if (m.getConfig().getBoolean("cancelMessage") == true) e.setCancelled(true);
+                else {
+                    String messagewithoutswear = e.getMessage().replaceAll(ad, StringUtils.repeat("*", ad.length()));
+                    e.setMessage(messagewithoutswear);
+                }
+                
+                e.getPlayer().sendMessage(m.prefix + ChatColor.RED + ChatColor.BOLD + "No advertising!");
+                // The flowing Will check the config, to see if the user has it enabled :)
+                SwearUtils.checkAll(m.getConfig().getString("command"), e.getPlayer());
             }
          }
       }

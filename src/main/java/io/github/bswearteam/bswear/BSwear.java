@@ -23,9 +23,10 @@ public class BSwear extends JavaPlugin implements Listener {
     public PluginDescriptionFile pdf = this.getDescription();
     public String version = pdf.getVersion();
 
-    public static Permission BypassPerm = new Permission("bswear.bypass");
-    public Permission COMMAND_PERM      = new Permission("bswear.command.use");
+    public Permission BypassPerm = new Permission("bswear.bypass");
+    public Permission CommandPerm       = new Permission("bswear.command.use");
     public Permission allPerm           = new Permission("bswear.*");
+    public Permission AdvertisingBypass = new Permission("bswear.advertising.bypass");
     public FileConfiguration config     = new YamlConfiguration();
     public FileConfiguration swears     = new YamlConfiguration();
     public FileConfiguration swearers   = new YamlConfiguration();
@@ -39,11 +40,12 @@ public class BSwear extends JavaPlugin implements Listener {
      * @author The BSwear Team
      * */
     public void onEnable() {
-        if (devBuild) version = "21117c";
+        if (devBuild) version = "21217a";
 
         PluginManager pm = Bukkit.getServer().getPluginManager();
         pm.addPermission(BypassPerm);
-        pm.addPermission(COMMAND_PERM);
+        pm.addPermission(CommandPerm);
+        pm.addPermission(AdvertisingBypass);
 
         configf = new File(getDataFolder(), "config.yml");
         swearf = new File(getDataFolder(), "words.yml");
@@ -65,34 +67,29 @@ public class BSwear extends JavaPlugin implements Listener {
         }
 
         saveDefaultConfig();
-        pm.registerEvents(this, this);
 
         // Shows an message saying BSwear is enabled
         if (getConfig().getBoolean("showEnabledMessage")) {
-            getLogger().info("");
             getLogger().info("[=-=-=] BSwear team [=-=-=]");
-            getLogger().info("This server runs BSwear version "+version);
-            getLogger().info("BSwear uses the ClusterAPI (by AdityaTD)");
-            getLogger().info("");
+            getLogger().info("This server runs BSwear v"+version);
+            getLogger().info("- ClusterAPI (by AdityaTD)");
         }
 
         // Checks if both ban and kick are set to true
-        if (getConfig().getBoolean("banSwearer") == true && getConfig().getBoolean("kickSwearer") == true) {
-            getLogger().info("[ERROR] You can not have, both ban and kick enabled! setting ban to false...");
-            getConfig().set("banSwearer", false);
-        }
+        if (getConfig().getBoolean("banSwearer") && getConfig().getBoolean("kickSwearer")) getConfig().set("banSwearer", false);
 
         // sets the prefix
-        if (getConfig().getString("messages.prefix") == null) {
-            getConfig().set("messages.prefix", "&6[BSwear]&2");
-        } else {
-            prefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")) + " ";
-        }
+        if (getConfig().getString("messages.prefix") == null) getConfig().set("messages.prefix", "&6[BSwear]&2");
+        prefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")) + " ";
 
         pm.registerEvents(this, this);
         getCommand("mute").setExecutor(new Mute(this));
         getCommand("bswear").setExecutor(new BSwearCommand(this));
-        registerEvents(this, this, new OnJoin(this), new Mute(this), new Advertising(this));
+        registerEvents(pm, this, this, new OnJoin(this), new Mute(this), new Advertising(this));
+    }
+    
+    public static void registerEvents(PluginManager p, org.bukkit.plugin.Plugin plugin, Listener... listeners) {
+        for (Listener lis : listeners) p.registerEvents(lis, plugin);
     }
 
     /*Controls config files*/
@@ -112,26 +109,7 @@ public class BSwear extends JavaPlugin implements Listener {
             String message = replaceAllNotNormal(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
 
             for (String word : getSwearConfig().getStringList("warnList")) {
-                boolean a = false;
-                String[] messageAsArray = message.split(" ");
-
-                int messageLength = messageAsArray.length;
-                for (int i = 0; i < messageLength;) {
-                    String partOfMessage = messageAsArray[i];
-                    StringBuilder strBuilder = new StringBuilder();
-                    char[] messageAsCharArray = partOfMessage.toLowerCase().toCharArray();
-                    for(int h=0;h<messageAsCharArray.length;){
-                        char character=messageAsCharArray[h];
-                        if(character>='0'&&character<='9'||character>='a'&&character<='z') strBuilder.append(character);
-                        h++;
-                    }
-
-                    if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
-                    i++;
-                }
-
-                if (a) {
-
+                if (ifHasWord(message, word)) {
                     if (getConfig().getBoolean("cancelMessage") == true) {
                         event.setCancelled(true); // Cancel Message
                     } else {
@@ -147,13 +125,26 @@ public class BSwear extends JavaPlugin implements Listener {
         }
     }
 
-    public void onDisable(){
-        getLogger().info("BSwear is now disabled");
+    public boolean ifHasWord(String message, String word) {
+        boolean a = false;
+        String[] messageAsArray = message.split(" ");
+        int messageLength = messageAsArray.length;
+        for (int i = 0; i < messageLength;) {
+            String partOfMessage = messageAsArray[i];
+            StringBuilder strBuilder = new StringBuilder();
+            char[] messageAsCharArray = partOfMessage.toLowerCase().toCharArray();
+            for(int h=0;h<messageAsCharArray.length;){
+                char character=messageAsCharArray[h];
+                if(character>='0'&&character<='9'||character>='a'&&character<='z') strBuilder.append(character);
+                h++;
+            }
+            if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
+            i++;
+        }
+        return a;
     }
-
-    public static void registerEvents(org.bukkit.plugin.Plugin plugin, Listener... listeners) {
-        for (Listener listener : listeners) Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
-    }
+    
+    public void onDisable(){/**/}
 
     /**
      * Replaces all non-words and non-numbers.

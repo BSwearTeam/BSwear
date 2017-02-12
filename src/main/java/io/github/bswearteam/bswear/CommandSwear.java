@@ -9,9 +9,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CommandSwear implements Listener {
     private BSwear main;
-    public CommandSwear(BSwear m) {
-		main = m;
-	}
+    public CommandSwear(BSwear m){main = m;}
 
     @EventHandler
     public void onCommandSwear(PlayerCommandPreprocessEvent event) {
@@ -21,29 +19,7 @@ public class CommandSwear implements Listener {
             if (!player.hasPermission("bswear.bypasscommands") || !player.hasPermission(BSwear.BypassPerm)) {
                 command = command.replaceAll("[-_@]", "");
                 for (String word : main.getSwearConfig().getStringList("warnList")) {
-                    boolean a = false;
-
-                    String[] messageAsArray = command.split(" ");
-
-                    int messageLength = messageAsArray.length;
-                    for (int i = 0; i < messageLength;) {
-                        String partOfMessage = messageAsArray[i];
-                        StringBuilder strBuilder = new StringBuilder();
-                        char[] messageAsCharArray = partOfMessage.toLowerCase().toCharArray();
-                        for (int h = 0; h < messageAsCharArray.length;) {
-                            char character = messageAsCharArray[h];
-                            if (character >= '0' && character <= '9' || character >= 'a' && character <= 'z') {
-                                strBuilder.append(character);
-                            }
-                            h++;
-                        }
-
-                        if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
-   
-                        i++;
-                    }
-
-                    if (a) {
+                    if (main.ifHasWord(command, word)) {
                         if (main.getConfig().getBoolean("cancelMessage") == true) {
                             event.setCancelled(true); // Cancel Message
                         } else {
@@ -56,17 +32,13 @@ public class CommandSwear implements Listener {
                         SwearUtils.checkAll(main.getConfig().getString("command"), event.getPlayer());
                     }
                 }
-			}
-		}
-	}
-    
-    public boolean ifStartsWith(String a, String...strs) {
-        boolean b = false;
-        for (String s : strs) {
-            if (a.startsWith(s)) {
-                b = true;
             }
         }
+    }
+
+    public boolean ifStartsWith(String a, String...strs) {
+        boolean b=false;
+        for(String s:strs){if(a.startsWith(s))b=true;}
         return b;
     }
 }

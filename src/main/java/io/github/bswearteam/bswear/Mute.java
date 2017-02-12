@@ -21,7 +21,7 @@ public class Mute implements Listener, CommandExecutor {
     public void onChatMute(AsyncPlayerChatEvent event) {
         if (m.muted.getBoolean("muted."+event.getPlayer().getName().toLowerCase())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(m.prefix + "You are muted");
+            event.getPlayer().sendMessage(m.prefix+"You are muted");
         }
     }
 
@@ -38,17 +38,17 @@ public class Mute implements Listener, CommandExecutor {
                     return true;
                 }
             } else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-                Player mutePlayer = Bukkit.getPlayer(args[1]);
-                if (mutePlayer == null) {
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target == null) {
                     sender.sendMessage(ChatColor.YELLOW +args[1]+ ChatColor.RED  + " is not online");
                     return true;
                 } else {
-                    m.muted.set("muted."+mutePlayer.getName().toLowerCase(), null);
-                    sender.sendMessage(m.prefix + ChatColor.RED + "Player " + mutePlayer.getName() + ChatColor.RED + " unmuted!");
+                    m.muted.set("muted."+target.getName().toLowerCase(), null);
+                    sender.sendMessage(m.prefix + ChatColor.RED + "Player " + target.getName() +ChatColor.RED+ " unmuted!");
                     return true;
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "Try /mute <add/remove> <player>");
+                sender.sendMessage(ChatColor.RED+"Try /mute <add/remove> <player>");
                 return true;
             }
         } else {
