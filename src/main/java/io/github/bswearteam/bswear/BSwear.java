@@ -2,6 +2,8 @@ package io.github.bswearteam.bswear;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -18,12 +20,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BSwear extends JavaPlugin implements Listener {
-    public boolean devBuild = true;
-
     public PluginDescriptionFile pdf = this.getDescription();
     public String version = pdf.getVersion();
 
-    public Permission BypassPerm = new Permission("bswear.bypass");
+    public static Permission BypassPerm = new Permission("bswear.bypass");
     public Permission CommandPerm       = new Permission("bswear.command.use");
     public Permission allPerm           = new Permission("bswear.*");
     public Permission AdvertisingBypass = new Permission("bswear.advertising.bypass");
@@ -31,8 +31,12 @@ public class BSwear extends JavaPlugin implements Listener {
     public FileConfiguration swears     = new YamlConfiguration();
     public FileConfiguration swearers   = new YamlConfiguration();
     public FileConfiguration muted      = new YamlConfiguration();
+    public FileConfiguration log = new YamlConfiguration();
     public String prefix = ChatColor.GOLD + "[BSwear] "+ChatColor.GREEN;
-    private File configf,swearf,swearersf,mutedf;
+    public File configf,swearf,swearersf,logFile;
+    public ArrayList<String> logtext = new ArrayList<String>();
+
+    File mutedf;
 
     /**
      * code that runs when BSwear is enabled
@@ -40,8 +44,6 @@ public class BSwear extends JavaPlugin implements Listener {
      * @author The BSwear Team
      * */
     public void onEnable() {
-        if (devBuild) version = "21217a";
-
         PluginManager pm = Bukkit.getServer().getPluginManager();
         pm.addPermission(BypassPerm);
         pm.addPermission(CommandPerm);
@@ -51,17 +53,27 @@ public class BSwear extends JavaPlugin implements Listener {
         swearf = new File(getDataFolder(), "words.yml");
         swearersf = new File(getDataFolder(), "swearers.yml");
         mutedf = new File(getDataFolder(), "mutedPlayers.yml");
+        logFile = new File(getDataFolder(), "log.yml");
 
         resourceSave(configf, "config.yml");
         resourceSave(swearf, "words.yml");
         resourceSave(swearersf, "swearers.yml");
         resourceSave(mutedf, "mutedPlayers.yml");
 
+        if (!logFile.exists()){
+            try {
+                logFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             config.load(configf);
             swears.load(swearf);
             swearers.load(swearersf);
             muted.load(mutedf);
+            log.load(logFile);
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -70,9 +82,9 @@ public class BSwear extends JavaPlugin implements Listener {
 
         // Shows an message saying BSwear is enabled
         if (getConfig().getBoolean("showEnabledMessage")) {
-            getLogger().info("[=-=-=] BSwear team [=-=-=]");
+            getLogger().info("[=-=] BSwear team [=-=]");
             getLogger().info("This server runs BSwear v"+version);
-            getLogger().info("- ClusterAPI (by AdityaTD)");
+            getLogger().info("- ClusterAPI by AdityaTD");
         }
 
         // Checks if both ban and kick are set to true
@@ -93,10 +105,8 @@ public class BSwear extends JavaPlugin implements Listener {
     }
 
     /*Controls config files*/
-    public FileConfiguration getSwearConfig() { return this.swears; }
     public void saveSwearConfig() { saveConf(swears, swearf); }
     public void saveSwearersConfig() { saveConf(swearers, swearersf); }
-    public void saveMutedConfig() { saveConf(muted, mutedf); }
 
     /**
      * The swear blocker
@@ -108,16 +118,22 @@ public class BSwear extends JavaPlugin implements Listener {
         if (!event.getPlayer().hasPermission(BypassPerm)) {
             String message = replaceAllNotNormal(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
 
-            for (String word : getSwearConfig().getStringList("warnList")) {
+            for (String word : swears.getStringList("warnList")) {
                 if (ifHasWord(message, word)) {
                     if (getConfig().getBoolean("cancelMessage") == true) {
-                        event.setCancelled(true); // Cancel Message
+                        event.setCancelled(true); // Cancel message.
                     } else {
                         String messagewithoutswear = event.getMessage().replaceAll(word, StringUtils.repeat("*", word.length()));
                         event.setMessage(messagewithoutswear);
                         event.getPlayer().sendMessage(ChatColor.DARK_GREEN+"[BSwear] "+ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD +"We've detected a swear word MIGHT be in your message so we blocked that word!");
                     }
-                    
+
+                    List<String> l = log.getStringList("log");
+                    String a = event.getPlayer().getName() + " said " + word.toUpperCase() + "in message: " + event.getMessage();
+                    l.add(a);
+                    log.set("log", l);
+                    saveConf(log, logFile);
+
                     // The flowing Will check the config, to see if the user has it enabled :)
                     SwearUtils.checkAll(getConfig().getString("command"), event.getPlayer());
                 }
@@ -143,7 +159,7 @@ public class BSwear extends JavaPlugin implements Listener {
         }
         return a;
     }
-    
+
     public void onDisable(){/**/}
 
     /**

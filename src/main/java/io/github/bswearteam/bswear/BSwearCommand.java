@@ -20,17 +20,20 @@ public class BSwearCommand implements CommandExecutor {
                     sendMessage(sender, m.prefix);
                     sendMessage(sender, ChatColor.AQUA + "BSwear v" + m.version);
                     sendMessage(sender, ChatColor.AQUA + "Cmd Help: /bswear help");
+
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
-                    sendMessage(sender, m.prefix + " Command Usage: /bswear <OPTION>");
+                    sendMessage(sender, m.prefix + " Usage: /bswear <option>");
                     sendMessage(sender, m.prefix + " Options:");
                     showCommandUsage(sender);
+                } else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
+                    sendMessage(sender, m.prefix +ChatColor.AQUA+ "BSwear v" +ChatColor.GREEN+ m.version);
 
                 } else if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
-                    List<String> words = m.getSwearConfig().getStringList("warnList");
+                    List<String> words = m.swears.getStringList("warnList");
                     String word = args[1].toLowerCase();
                     if (!words.contains(word)) {
                         words.add(word);
-                        m.getSwearConfig().set("warnList", words);
+                        m.swears.set("warnList", words);
                         m.saveSwearConfig();
                         sender.sendMessage(m.prefix + m.getConfig().getString("messages.addword"));
                     } else {
@@ -38,22 +41,19 @@ public class BSwearCommand implements CommandExecutor {
                     }
 
                 } else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
-                    List<String> words = m.getSwearConfig().getStringList("warnList");
+                    List<String> words = m.swears.getStringList("warnList");
                     String word = args[1].toLowerCase();
                     if (words.contains(word)) {
                         words.remove(word);
-                        m.getSwearConfig().set("warnList", words);
+                        m.swears.set("warnList", words);
                         m.saveSwearConfig();
                         sender.sendMessage(m.prefix + m.getConfig().getString("messages.delword"));
                     } else {
                         sender.sendMessage(m.prefix +ChatColor.RED+ChatColor.BOLD+ "Error! This word is not blocked!");
                     }
 
-                } else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
-                    sendMessage(sender, m.prefix +ChatColor.AQUA+ "BSwear v" +ChatColor.GREEN+ m.version);
-
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("wordlist")) {
-                    List<String> words = m.getSwearConfig().getStringList("warnList");
+                    List<String> words = m.swears.getStringList("warnList");
                     String message = "Blocked Words: ";
                     for (String w : words) {
                         message = message + w;
@@ -69,10 +69,10 @@ public class BSwearCommand implements CommandExecutor {
                     sender.sendMessage(swearerList);
 
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("clear")) {
-                    List<String> words = m.getSwearConfig().getStringList("warnList");
+                    List<String> words = m.swears.getStringList("warnList");
                     for (String word : words) {
                         words.remove(word);
-                        m.getSwearConfig().set("warnList", words);
+                        m.swears.set("warnList", words);
                         m.saveSwearConfig();
                         sender.sendMessage(m.prefix +"All blocked words have been unblocked!");
                     }
@@ -93,14 +93,10 @@ public class BSwearCommand implements CommandExecutor {
                         }
                         m.saveConfig();
                     } else {
-                        if (m.getConfig().getBoolean("sendTitle")) {
-                            sendMessage(sender, m.prefix + "Title on swear is ENABLED");
-                        } else {
-                            sendMessage(sender, m.prefix + "Title on swear is DISABLED");
-                        }
+                        sendMessage(sender, "TitleAPI enabled: " + m.getConfig().getBoolean("sendTitle"));
                     }
                 } else {
-                    sender.sendMessage(m.prefix + "Error! please check your args OR do \"/bswear help\" for command help");
+                    sender.sendMessage(m.prefix + "Error! Wrong args, do \"/bswear help\" for command help");
                 }
             } else {
                 sender.sendMessage(m.prefix + "BSwear " + m.version);
@@ -124,7 +120,7 @@ public class BSwearCommand implements CommandExecutor {
                 };
         for (String option : options) {
             String[] strs = option.split("-");
-            sendMessage(s, ChatColor.GOLD+"/bswear "+strs[0]+ChatColor.GREEN +" - "+strs[1]);
+            sendMessage(s, ChatColor.GOLD + "/bswear " + strs[0] + ChatColor.GREEN + " - "+strs[1]);
         }
     }
     

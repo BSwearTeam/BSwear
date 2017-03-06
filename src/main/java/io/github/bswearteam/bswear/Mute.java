@@ -34,6 +34,7 @@ public class Mute implements Listener, CommandExecutor {
                     return true;
                 } else {
                     m.muted.set("muted."+mutePlayer.getName().toLowerCase(), true);
+                    m.saveConf(m.muted, m.mutedf);
                     sender.sendMessage(ChatColor.RED+ mutePlayer.getName() +ChatColor.RED + " is now muted!");
                     return true;
                 }
@@ -44,6 +45,7 @@ public class Mute implements Listener, CommandExecutor {
                     return true;
                 } else {
                     m.muted.set("muted."+target.getName().toLowerCase(), null);
+                    m.saveConf(m.muted, m.mutedf);
                     sender.sendMessage(m.prefix + ChatColor.RED + "Player " + target.getName() +ChatColor.RED+ " unmuted!");
                     return true;
                 }

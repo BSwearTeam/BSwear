@@ -18,7 +18,7 @@ public class CommandSwear implements Listener {
         if (ifStartsWith(command, "broadcast", "me", "tell", "msg", "pm", "whisper", "reply", "say", "tellraw", "title")) {
             if (!player.hasPermission("bswear.bypasscommands") || !player.hasPermission(BSwear.BypassPerm)) {
                 command = command.replaceAll("[-_@]", "");
-                for (String word : main.getSwearConfig().getStringList("warnList")) {
+                for (String word : main.swears.getStringList("warnList")) {
                     if (main.ifHasWord(command, word)) {
                         if (main.getConfig().getBoolean("cancelMessage") == true) {
                             event.setCancelled(true); // Cancel Message

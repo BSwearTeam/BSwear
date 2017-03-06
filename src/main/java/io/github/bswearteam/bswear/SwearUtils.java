@@ -28,14 +28,14 @@ public class SwearUtils {
 
     /**
      * if commandenable is true,
-     * then an {@link Command} is run.
+     * then a {@link Command} will run.
      * 
-     * @param sc <i>the command to run</i>
-     * @param swearer <i>the player that is swearing, in an String format</i>
+     * @param sc <i>The command to run</i>
+     * @param plr <i>The player that is swearing</i>
      */
-    public static void runCommand(String sc, Player swearer) {
+    public static void runCommand(String sc, Player plr) {
         if (main.getConfig().getBoolean("commandenable")) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), sc.replace("%swearer%", swearer.getName()));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), sc.replace("%swearer%", plr.getName()));
         }
     }
 
@@ -52,9 +52,9 @@ public class SwearUtils {
     /**
      * if kickSwearer is true, this will kick them
      */
-    public static void kickSwearer(Player player) {
+    public static void kickSwearer(Player plr) {
         if (!(main.getConfig().getBoolean("banSwearer")) && main.getConfig().getBoolean("kickSwearer")) {
-            player.kickPlayer("We've detected a swear word MIGHT be in your message so we kicked you ");
+            plr.kickPlayer("We've detected a swear word MIGHT be in your message so we kicked you");
         }
     }
 
@@ -62,10 +62,10 @@ public class SwearUtils {
      * if banSwearer is true, this will ban them
      */
     @SuppressWarnings("deprecation")
-    public static void banSwearer(Player player) {
+    public static void banSwearer(Player plr) {
         if (main.getConfig().getBoolean("banSwearer") && !(main.getConfig().getBoolean("kickSwearer"))) {
-            player.kickPlayer("We've detected a swear word in your msg, so its setup to ban you");
-            player.setBanned(true);
+            plr.kickPlayer("We've detected a swear word in your msg, so its setup to ban you");
+            plr.setBanned(true);
         }
     }
 
