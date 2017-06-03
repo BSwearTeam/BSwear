@@ -1,6 +1,8 @@
 package io.github.bswearteam.bswear;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.Date;
+
+import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,10 +22,10 @@ public class SwearUtils {
             setSwearNum(p, 1);
         }
 
-        SwearUtils.runCommand(sc, p);
-        SwearUtils.sendTitle(p);
-        SwearUtils.kickSwearer(p);
-        SwearUtils.banSwearer(p);
+        runCommand(sc, p);
+        sendTitle(p);
+        kickSwearer(p);
+        banSwearer(p);
     }
 
     /**
@@ -64,8 +66,16 @@ public class SwearUtils {
     @SuppressWarnings("deprecation")
     public static void banSwearer(Player plr) {
         if (main.getConfig().getBoolean("banSwearer") && !(main.getConfig().getBoolean("kickSwearer"))) {
-            plr.kickPlayer("We've detected a swear word in your msg, so its setup to ban you");
-            plr.setBanned(true);
+            plr.kickPlayer("We've detected a swear word in your msg, so your now tempbanned.");
+            //Does not exist in 1.12: plr.setBanned(true);
+            Date d = new Date(System.currentTimeMillis());
+            d.setHours(d.getHours() + getPlrSwears(plr));
+
+            String time = getPlrSwears(plr) + " hour";
+            if (getPlrSwears(plr) > 1) {
+                time = time + "s";
+            }
+            Bukkit.getServer().getBanList(Type.NAME).addBan(plr.getName(), "Banned for " + time + " for swearing.", d, "BSwear");
         }
     }
 
@@ -74,8 +84,8 @@ public class SwearUtils {
      * @param amount the amount.
      */ 
     public static void setSwearNum(Player plr, int amount) {
-        main.swearers.set("swearers."+plr.getName()+".amount", amount);
-        main.swearers.set("swearers."+plr.getName()+".hasSweared", true);
+        main.swearers.set("swearers."+plr.getUniqueId()+".amount", amount);
+        main.swearers.set("swearers."+plr.getUniqueId()+".hasSweared", true);
     }
 
     /**
@@ -84,7 +94,7 @@ public class SwearUtils {
      */ 
     public static int getPlrSwears(Player plr) {
         if (hasSweared(plr)) {
-            return main.swearers.getInt("swearers."+plr.getName()+".amount");
+            return main.swearers.getInt("swearers."+plr.getUniqueId()+".amount");
         } else {
             return 0;
         }
@@ -95,7 +105,10 @@ public class SwearUtils {
      * @return player has sweared befour.
      */
     public static boolean hasSweared(Player plr) {
-        return main.swearers.getBoolean("swearers."+plr.getName()+".hasSweared");
+        if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) {
+            return false;
+        }
+        return main.swearers.getBoolean("swearers."+plr.getUniqueId()+".hasSweared");
     }
 
     @SuppressWarnings("deprecation")
@@ -108,6 +121,15 @@ public class SwearUtils {
      * @return String
      */
     public static String repl(String msg, String w) {
-        return msg.replaceAll(w, StringUtils.repeat("*", w.length()));
+        return msg.replaceAll(w, repeat("*", w.length()));
+    }
+    
+    public static String repeat(String a, int b) {
+        String c = a;
+        for (int i = 1; i < b;) {
+            c = c + a;
+            i++;
+        }
+        return c;
     }
 }

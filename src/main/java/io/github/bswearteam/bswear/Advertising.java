@@ -1,6 +1,5 @@
 package io.github.bswearteam.bswear;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +19,7 @@ public class Advertising implements Listener {
             if (m.ifHasWord(msg, ad)) {
                 if (m.getConfig().getBoolean("cancelMessage") == true) e.setCancelled(true);
                 else {
-                    String messagewithoutswear = e.getMessage().replaceAll(ad, StringUtils.repeat("*", ad.length()));
+                    String messagewithoutswear = e.getMessage().replaceAll(ad, SwearUtils.repeat("*", ad.length()));
                     e.setMessage(messagewithoutswear);
                 }
                 

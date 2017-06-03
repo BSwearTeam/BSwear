@@ -1,6 +1,5 @@
 package io.github.bswearteam.bswear;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +22,7 @@ public class CommandSwear implements Listener {
                         if (main.getConfig().getBoolean("cancelMessage") == true) {
                             event.setCancelled(true); // Cancel Message
                         } else {
-                            String messagewithoutswear = event.getMessage().replaceAll(word, StringUtils.repeat("*", word.length()));
+                            String messagewithoutswear = event.getMessage().replaceAll(word, SwearUtils.repeat("*", word.length()));
                             event.setMessage(messagewithoutswear);
                             event.getPlayer().sendMessage(ChatColor.DARK_GREEN+"[BSwear] "+ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD +"We've detected a swear word MIGHT be in your message so we blocked that word!");
                         }

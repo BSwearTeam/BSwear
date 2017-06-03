@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -123,7 +122,7 @@ public class BSwear extends JavaPlugin implements Listener {
                     if (getConfig().getBoolean("cancelMessage") == true) {
                         event.setCancelled(true); // Cancel message.
                     } else {
-                        String messagewithoutswear = event.getMessage().replaceAll(word, StringUtils.repeat("*", word.length()));
+                        String messagewithoutswear = event.getMessage().replaceAll(word, SwearUtils.repeat("*", word.length()));
                         event.setMessage(messagewithoutswear);
                         event.getPlayer().sendMessage(ChatColor.DARK_GREEN+"[BSwear] "+ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD +"We've detected a swear word MIGHT be in your message so we blocked that word!");
                     }
