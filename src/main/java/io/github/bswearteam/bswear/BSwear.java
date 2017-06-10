@@ -26,10 +26,10 @@ public class BSwear extends JavaPlugin implements Listener {
     public Permission CommandPerm       = new Permission("bswear.command.use");
     public Permission allPerm           = new Permission("bswear.*");
     public Permission AdvertisingBypass = new Permission("bswear.advertising.bypass");
-    public FileConfiguration config     = new YamlConfiguration();
-    public FileConfiguration swears     = new YamlConfiguration();
-    public FileConfiguration swearers   = new YamlConfiguration();
-    public FileConfiguration muted      = new YamlConfiguration();
+    public FileConfiguration config = new YamlConfiguration();
+    public FileConfiguration swears = new YamlConfiguration();
+    public FileConfiguration swearers = new YamlConfiguration();
+    public FileConfiguration muted = new YamlConfiguration();
     public FileConfiguration log = new YamlConfiguration();
     public String prefix = ChatColor.GOLD + "[BSwear] "+ChatColor.GREEN;
     public File configf,swearf,swearersf,logFile;
@@ -116,7 +116,6 @@ public class BSwear extends JavaPlugin implements Listener {
     public void onChatSwear(AsyncPlayerChatEvent event) {
         if (!event.getPlayer().hasPermission(BypassPerm)) {
             String message = replaceAllNotNormal(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
-
             for (String word : swears.getStringList("warnList")) {
                 if (ifHasWord(message, word)) {
                     if (getConfig().getBoolean("cancelMessage") == true) {
@@ -133,7 +132,6 @@ public class BSwear extends JavaPlugin implements Listener {
                     log.set("log", l);
                     saveConf(log, logFile);
 
-                    // The flowing Will check the config, to see if the user has it enabled :)
                     SwearUtils.checkAll(getConfig().getString("command"), event.getPlayer());
                 }
             }
@@ -158,8 +156,6 @@ public class BSwear extends JavaPlugin implements Listener {
         }
         return a;
     }
-
-    public void onDisable(){/**/}
 
     /**
      * Replaces all non-words and non-numbers.
