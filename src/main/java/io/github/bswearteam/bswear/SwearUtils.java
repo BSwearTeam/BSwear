@@ -105,10 +105,14 @@ public class SwearUtils {
      * @return player has sweared befour.
      */
     public static boolean hasSweared(Player plr) {
-        if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) {
+        try {
+            if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) {
+                return false;
+            }
+            return main.swearers.getBoolean("swearers."+plr.getUniqueId()+".hasSweared");
+        } catch (NullPointerException ingore) {
             return false;
         }
-        return main.swearers.getBoolean("swearers."+plr.getUniqueId()+".hasSweared");
     }
 
     @SuppressWarnings("deprecation")

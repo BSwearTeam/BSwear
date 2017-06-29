@@ -15,7 +15,7 @@ public class Advertising implements Listener {
       Player p = e.getPlayer();
       if (!p.hasPermission(m.AdvertisingBypass)) {
          String msg = e.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
-         for (String ad : m.getConfig().getStringList("advertising")) {
+         m.getConfig().getStringList("advertising").stream().forEach((ad) -> {
             if (m.ifHasWord(msg, ad)) {
                 if (m.getConfig().getBoolean("cancelMessage") == true) e.setCancelled(true);
                 else {
@@ -27,7 +27,7 @@ public class Advertising implements Listener {
                 // The flowing Will check the config, to see if the user has it enabled :)
                 SwearUtils.checkAll(m.getConfig().getString("command"), e.getPlayer());
             }
-         }
+         });
       }
    }
 }

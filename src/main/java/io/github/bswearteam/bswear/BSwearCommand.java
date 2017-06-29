@@ -70,12 +70,12 @@ public class BSwearCommand implements CommandExecutor {
 
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("clear")) {
                     List<String> words = m.swears.getStringList("warnList");
-                    for (String word : words) {
+                    words.stream().forEach((word) -> {
                         words.remove(word);
                         m.swears.set("warnList", words);
                         m.saveSwearConfig();
                         sender.sendMessage(m.prefix +"All blocked words have been unblocked!");
-                    }
+                    });
 
                 } else if (args.length == 2 && args[0].equalsIgnoreCase("prefix")) {
                     m.getConfig().set("messages.prefix", args[1]);

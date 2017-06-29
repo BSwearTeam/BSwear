@@ -33,7 +33,7 @@ public class BSwear extends JavaPlugin implements Listener {
     public FileConfiguration log = new YamlConfiguration();
     public String prefix = ChatColor.GOLD + "[BSwear] "+ChatColor.GREEN;
     public File configf,swearf,swearersf,logFile;
-    public ArrayList<String> logtext = new ArrayList<String>();
+    public ArrayList<String> logtext = new ArrayList<>();
 
     File mutedf;
 
@@ -116,7 +116,7 @@ public class BSwear extends JavaPlugin implements Listener {
     public void onChatSwear(AsyncPlayerChatEvent event) {
         if (!event.getPlayer().hasPermission(BypassPerm)) {
             String message = replaceAllNotNormal(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
-            for (String word : swears.getStringList("warnList")) {
+            swears.getStringList("warnList").stream().forEach((word) -> {
                 if (ifHasWord(message, word)) {
                     if (getConfig().getBoolean("cancelMessage") == true) {
                         event.setCancelled(true); // Cancel message.
@@ -134,7 +134,7 @@ public class BSwear extends JavaPlugin implements Listener {
 
                     SwearUtils.checkAll(getConfig().getString("command"), event.getPlayer());
                 }
-            }
+            });
         }
     }
 
@@ -146,10 +146,8 @@ public class BSwear extends JavaPlugin implements Listener {
             String partOfMessage = messageAsArray[i];
             StringBuilder strBuilder = new StringBuilder();
             char[] messageAsCharArray = partOfMessage.toLowerCase().toCharArray();
-            for(int h=0;h<messageAsCharArray.length;){
-                char character=messageAsCharArray[h];
+            for (char character : messageAsCharArray) {
                 if(character>='0'&&character<='9'||character>='a'&&character<='z') strBuilder.append(character);
-                h++;
             }
             if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
             i++;
