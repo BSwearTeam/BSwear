@@ -19,7 +19,7 @@ public class CommandSwear implements Listener {
                 command = command.replaceAll("[-_@]", "");
                 for (String word : main.swears.getStringList("warnList")) {
                     if (main.ifHasWord(command, word)) {
-                        if (main.getConfig().getBoolean("cancelMessage") == true) {
+                        if (main.getConfig().getBoolean("cancelMessage")) {
                             event.setCancelled(true); // Cancel Message
                         } else {
                             String messagewithoutswear = event.getMessage().replaceAll(word, SwearUtils.repeat("*", word.length()));
@@ -36,8 +36,9 @@ public class CommandSwear implements Listener {
     }
 
     public boolean ifStartsWith(String a, String...strs) {
-        boolean b=false;
-        for(String s:strs){if(a.startsWith(s))b=true;}
-        return b;
+        for(String s:strs){
+            if(a.startsWith(s)) return true;
+        }
+        return false;
     }
 }

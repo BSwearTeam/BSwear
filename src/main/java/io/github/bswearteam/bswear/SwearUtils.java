@@ -16,16 +16,35 @@ public class SwearUtils {
      * Checks every thing.
      */
     public static void checkAll(String sc, Player p) {
-        if (hasSweared(p)){
-            setSwearNum(p, (getPlrSwears(p) + 1));
-        }else{
-            setSwearNum(p, 1);
+        try {
+            if (hasSweared(p)){
+                setSwearNum(p, (getPlrSwears(p) + 1));
+            }else{
+                setSwearNum(p, 1);
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Error: " + e);
         }
-
-        runCommand(sc, p);
-        sendTitle(p);
-        kickSwearer(p);
-        banSwearer(p);
+        try {
+            runCommand(sc, p);
+        } catch (NullPointerException e) {
+            System.out.println("Error: " + e);
+        }
+        try {
+            sendTitle(p);
+        } catch (NullPointerException e) {
+            System.out.println("Error: " + e);
+        }
+        try {
+            kickSwearer(p);
+        } catch (NullPointerException e) {
+            System.out.println("Error: " + e);
+        }
+        try {
+            banSwearer(p);
+        } catch (NullPointerException e) {
+            System.out.println("Error: " + e);
+        }
     }
 
     /**
@@ -67,7 +86,6 @@ public class SwearUtils {
     public static void banSwearer(Player plr) {
         if (main.getConfig().getBoolean("banSwearer") && !(main.getConfig().getBoolean("kickSwearer"))) {
             plr.kickPlayer("We've detected a swear word in your msg, so your now tempbanned.");
-            //Does not exist in 1.12: plr.setBanned(true);
             Date d = new Date(System.currentTimeMillis());
             d.setHours(d.getHours() + getPlrSwears(plr));
 
@@ -135,5 +153,14 @@ public class SwearUtils {
             i++;
         }
         return c;
+    }
+
+    public static boolean canSee(Player p) {
+        try {
+            return p.hasPermission("bswear.view") || main.getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return p.hasPermission("bswear.view");
+        }
     }
 }

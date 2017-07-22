@@ -11,10 +11,12 @@ public class OnJoin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        if (m.getConfig().getBoolean("showJoinMessage") == true) {
+        if (m.getConfig().getBoolean("showJoinMessage")) {
             int pWarn = SwearUtils.getPlrSwears(e.getPlayer());
-            e.getPlayer().sendMessage(m.prefix +ChatColor.GRAY+ "Our Antiswearing filter is protecting this server!");
-            e.getPlayer().sendMessage(m.prefix +ChatColor.GRAY+ "You have "+pWarn+" warnings out of max "+m.getConfig().getInt("maxWarnings"));
+            e.getPlayer().sendMessage(m.prefix +ChatColor.GRAY+ "Protected by powerful antiswear.");
+            if (pWarn > 0) {
+                e.getPlayer().sendMessage(m.prefix +ChatColor.GRAY+ "You have " + pWarn + " warnings out of max "+m.getConfig().getInt("maxWarnings"));
+            }
         }
     }
 }

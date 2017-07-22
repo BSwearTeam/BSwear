@@ -1,5 +1,5 @@
 name: BSwear
-version: 4.2.2
+version: 4.3
 authors: [BSwearTeam]
 main: io.github.bswearteam.bswear.BSwear
 prefix: BSWEAR
@@ -9,8 +9,11 @@ permissions:
      description: Gives access to all BSwear commands
      children:
        bswear.bypass: true
+       bswear.view: true
 commands:
     mute:
         description: mute players
     bswear:
         description: bswear command
+    swear:
+        description: enable swearing for player.

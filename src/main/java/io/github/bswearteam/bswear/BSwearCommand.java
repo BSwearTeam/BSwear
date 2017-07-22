@@ -86,14 +86,34 @@ public class BSwearCommand implements CommandExecutor {
                     if (args.length == 2) {
                         if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("yes") || args[1].equalsIgnoreCase("y") || args[1].equalsIgnoreCase("enable")) {
                             m.getConfig().set("sendTitle", true);
+                            m.saveConfig();
                             sendMessage(sender, m.prefix + "Title on swear is now ENABLED");
                         } else {
                             m.getConfig().set("sendTitle", false);
+                            m.saveConfig();
                             sendMessage(sender, m.prefix + "Title on swear is now DISABLED");
                         }
                         m.saveConfig();
                     } else {
                         sendMessage(sender, "TitleAPI enabled: " + m.getConfig().getBoolean("sendTitle"));
+                    }
+                } else if (args.length > 0 && args[0].equalsIgnoreCase("allowViewPlayer")) {
+                    if (args.length == 1) {
+                        sender.sendMessage(ChatColor.RED + "Usage: /bswear allowViewPlayer <Player>");
+                        return true;
+                    }
+                    List<String> words = m.getConfig().getStringList("allowViewPlayers");
+                    String word = args[1].toLowerCase();
+                    if (!words.contains(word)) {
+                        words.add(word);
+                        m.getConfig().set("allowViewPlayers", words);
+                        m.saveConfig();
+                        sender.sendMessage(m.prefix + " Player " + args[1] + " can now read swear messages.");
+                    } else {
+                        words.remove(word);
+                        m.getConfig().set("allowViewPlayers", words);
+                        m.saveConfig();
+                        sender.sendMessage(m.prefix + " Player " + args[1] + " can now NOT read swear messages.");
                     }
                 } else {
                     sender.sendMessage(m.prefix + "Error! Wrong args, do \"/bswear help\" for command help");
@@ -116,7 +136,8 @@ public class BSwearCommand implements CommandExecutor {
                 "wordlist - Show all blocked words",
                 "prefix - Sets the prefix",
                 "swearers - Show all swearers",
-                "useTitles - set using title on swear"
+                "useTitles - set using title on swear",
+                "allowViewPlayer - allow per player antiswear"
                 };
         for (String option : options) {
             String[] strs = option.split("-");

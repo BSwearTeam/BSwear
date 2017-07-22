@@ -55,3 +55,8 @@ advertising:
   - '.net'
   - 'myserver'
   - 'play.'
+
+# List of players that can see swear messages
+# names in lowercase.
+allowViewPlayers:
+  - 'isaiahmctec'

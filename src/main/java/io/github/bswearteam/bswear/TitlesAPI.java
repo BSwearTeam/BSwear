@@ -1,8 +1,8 @@
 /**
  * @Author: Aditya / AdityaTD
- * MIT Licence
+ * MIT License
  * CODE FROM: CLUSTERAPI BY ADITYATD.
- * Used with permisson.
+ * Used with permission.
  */
 package io.github.bswearteam.bswear;
 
