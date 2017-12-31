@@ -39,6 +39,7 @@ public class BSwear extends JavaPlugin implements Listener {
 	public String prefix = ChatColor.GOLD + "[BSwear] " + ChatColor.GREEN;
 	public File configf, swearf, swearersf, logFile, mutedf;
 	public ArrayList<String> logtext = new ArrayList<>();
+	//private String lastblockmsg = "_null_";
 
 	@Override
 	public void onEnable() {
@@ -121,7 +122,6 @@ public class BSwear extends JavaPlugin implements Listener {
 				output = new String(contents, 0, bytesRead);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return output;
@@ -132,17 +132,15 @@ public class BSwear extends JavaPlugin implements Listener {
 		try {
 			String versions = getFromURL(url);
 			String[] ver = versions.split("\n");
-			if (!ArrayUtils.contains(ver, version.toString())) {
+			if (!ArrayUtils.contains(ver, version)) {
 				getLogger().info("[=-=] BSwear Update [=-=]");
 				getLogger().info("An Update should be available.");
-				getLogger().info("Current Version: " + version.toString());
+				getLogger().info("Current Version: " + version);
 				getLogger().info("New Version: " + ver[0]);
-			}else {
+			} else {
 				getLogger().info("BSwear is up-to-date");
-
 			}
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -157,8 +155,6 @@ public class BSwear extends JavaPlugin implements Listener {
 		saveConf(swearers, swearersf);
 	}
 
-	private String lastblockmsg = "_null_";
-
 	@EventHandler /* (priority = EventPriority.HIGHEST) */
 	public void onChatSwear(AsyncPlayerChatEvent event) {
 		if (true/* !event.getPlayer().hasPermission(BypassPerm) */) {
@@ -167,20 +163,20 @@ public class BSwear extends JavaPlugin implements Listener {
 			boolean allowUsersToSeeWords = true; // TODO: add to configuration
 			String messagewithoutswear = message;
 			int i = 0;
+			System.out.println("BSwear debug: " + event.getMessage());
 			/* swears.getStringList("warnList").stream().forEach((word) -> { */
 			for (String word : swears.getStringList("warnList")) {
 				if (ifHasWord(message, word)) {
 					has = true;
 					event.setCancelled(true); // BSwear handles sending the
 												// message so cancel the event.
-					if (getConfig().getBoolean("cancelMessage") == true) {
+					if (getConfig().getBoolean("cancelMessage")) {
 						has = false; // cancel message.
 					} else {
 						messagewithoutswear = messagewithoutswear.replaceAll(word,
 								SwearUtils.repeat("*", word.length()));
-						if (!allowUsersToSeeWords) {
-							event.setMessage(messagewithoutswear);
-						}
+						if (!allowUsersToSeeWords) event.setMessage(messagewithoutswear);
+
 						if (!SwearUtils.canSee(event.getPlayer())) {
 							if (i == 0) {
 								event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.YELLOW
@@ -205,7 +201,7 @@ public class BSwear extends JavaPlugin implements Listener {
 			if (has) {
 				if (allowUsersToSeeWords) {
 					event.setCancelled(true);
-					if (!lastblockmsg.equalsIgnoreCase(event.getPlayer().getName() + "-" + message)) {
+					if (true /*|| !lastblockmsg.equalsIgnoreCase(event.getPlayer().getName() + "-" + message)*/) {
 						for (Player p : Bukkit.getOnlinePlayers()) {
 							if (SwearUtils.canSee(p)) {
 								p.sendMessage(String.format(event.getFormat(), event.getPlayer().getDisplayName(),
@@ -220,13 +216,13 @@ public class BSwear extends JavaPlugin implements Listener {
 					event.setCancelled(false);
 					event.setMessage(messagewithoutswear);
 				}
-				lastblockmsg = event.getPlayer().getName() + "-" + message;
+				/*lastblockmsg = event.getPlayer().getName() + "-" + message;
 				Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable() {
 					@Override
 					public void run() {
 						lastblockmsg = "_null_";
 					}
-				}, 3);
+				}, 3);*/
 			}
 		}
 	}
@@ -243,8 +239,8 @@ public class BSwear extends JavaPlugin implements Listener {
 				if (character >= '0' && character <= '9' || character >= 'a' && character <= 'z')
 					strBuilder.append(character);
 			}
-			if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase()))
-				a = true;
+			if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
+
 			i++;
 		}
 		return a;

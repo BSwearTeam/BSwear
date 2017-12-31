@@ -19,32 +19,24 @@ public class SwearUtils {
         try {
             if (hasSweared(p)){
                 setSwearNum(p, (getPlrSwears(p) + 1));
-            }else{
+            } else {
                 setSwearNum(p, 1);
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e);
         }
+
         try {
             runCommand(sc, p);
-        } catch (NullPointerException e) {
-            System.out.println("Error: " + e);
-        }
+        } catch (Exception e) { System.err.println("Error: " + e); }
+
         try {
             sendTitle(p);
-        } catch (NullPointerException e) {
-            System.out.println("Error: " + e);
-        }
+        } catch (Exception e) { System.err.println("Error: " + e); }
+
         try {
-            kickSwearer(p);
-        } catch (NullPointerException e) {
-            System.out.println("Error: " + e);
-        }
-        try {
-            banSwearer(p);
-        } catch (NullPointerException e) {
-            System.out.println("Error: " + e);
-        }
+            kickOrBan(p);
+        } catch (Exception e) { System.err.println("Error: " + e); }
     }
 
     /**
@@ -69,30 +61,25 @@ public class SwearUtils {
             sendTitle(plr, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
         }
     }
-
-    /**
-     * if kickSwearer is true, this will kick them
-     */
-    public static void kickSwearer(Player plr) {
-        if (!(main.getConfig().getBoolean("banSwearer")) && main.getConfig().getBoolean("kickSwearer")) {
-            plr.kickPlayer("We've detected a swear word MIGHT be in your message so we kicked you");
-        }
-    }
-
-    /**
-     * if banSwearer is true, this will ban them
-     */
+    
     @SuppressWarnings("deprecation")
-    public static void banSwearer(Player plr) {
-        if (main.getConfig().getBoolean("banSwearer") && !(main.getConfig().getBoolean("kickSwearer"))) {
+    public static void kickOrBan(Player plr) {
+        boolean kick = main.getConfig().getBoolean("kickSwearer");
+        boolean ban = main.getConfig().getBoolean("banSwearer");
+        
+        if (kick) {
+            plr.kickPlayer("Kicked for swearing");
+            return;
+        }
+
+        if (ban) {
             plr.kickPlayer("We've detected a swear word in your msg, so your now tempbanned.");
             Date d = new Date(System.currentTimeMillis());
             d.setHours(d.getHours() + getPlrSwears(plr));
 
             String time = getPlrSwears(plr) + " hour";
-            if (getPlrSwears(plr) > 1) {
-                time = time + "s";
-            }
+            if (getPlrSwears(plr) > 1) time = time + "s";
+
             Bukkit.getServer().getBanList(Type.NAME).addBan(plr.getName(), "Banned for " + time + " for swearing.", d, "BSwear");
         }
     }
@@ -127,15 +114,20 @@ public class SwearUtils {
             if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) {
                 return false;
             }
-            return main.swearers.getBoolean("swearers."+plr.getUniqueId()+".hasSweared");
-        } catch (NullPointerException ingore) {
+            return main.swearers.getBoolean("swearers." + plr.getUniqueId() + ".hasSweared");
+        } catch (Exception ingore) {
             return false;
         }
     }
 
     @SuppressWarnings("deprecation")
     public static void sendTitle(Player plr, String title, String sub) {
-        TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
+        try {
+            TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
+        } catch (Exception e) {
+            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/5ce44d45312122ecf210dbf614e125f72289f43f
+            plr.sendTitle(title, sub);
+        }
     }
 
     /**
@@ -157,10 +149,10 @@ public class SwearUtils {
 
     public static boolean canSee(Player p) {
         try {
-            return p.hasPermission("bswear.view") || main.getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
+            return main.getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
         } catch (Exception e) {
             e.printStackTrace();
-            return p.hasPermission("bswear.view");
+            return false;
         }
     }
 }
