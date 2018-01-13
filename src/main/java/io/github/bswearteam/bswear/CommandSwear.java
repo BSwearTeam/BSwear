@@ -4,13 +4,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CommandSwear implements Listener {
     private BSwear main;
     public CommandSwear(BSwear m){main = m;}
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void onCommandSwear(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String command = event.getMessage().substring(1).toLowerCase();
