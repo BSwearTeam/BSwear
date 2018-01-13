@@ -5,12 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.EventPriority;
 
 public class Advertising implements Listener {
     private BSwear m;
     public Advertising(BSwear b) { m = b;}
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void OnChatAdvertising(AsyncPlayerChatEvent e) {
       Player p = e.getPlayer();
       if (!p.hasPermission(m.AdvertisingBypass)) {
