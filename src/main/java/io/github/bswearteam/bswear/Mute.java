@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -17,7 +18,7 @@ public class Mute implements Listener, CommandExecutor {
     private BSwear m;
     public Mute(BSwear b){m = b;}
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void onChatMute(AsyncPlayerChatEvent event) {
         if (m.muted.getBoolean("muted."+event.getPlayer().getName().toLowerCase())) {
             event.setCancelled(true);
