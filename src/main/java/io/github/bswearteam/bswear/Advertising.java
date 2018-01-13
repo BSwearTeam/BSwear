@@ -17,14 +17,13 @@ public class Advertising implements Listener {
          String msg = e.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
          m.getConfig().getStringList("advertising").stream().forEach((ad) -> {
             if (m.ifHasWord(msg, ad)) {
-                if (m.getConfig().getBoolean("cancelMessage") == true) e.setCancelled(true);
+                if (m.getConfig().getBoolean("cancelMessage")) e.setCancelled(true);
                 else {
                     String messagewithoutswear = e.getMessage().replaceAll(ad, SwearUtils.repeat("*", ad.length()));
                     e.setMessage(messagewithoutswear);
                 }
                 
                 e.getPlayer().sendMessage(m.prefix + ChatColor.RED + ChatColor.BOLD + "No advertising!");
-                // The flowing Will check the config, to see if the user has it enabled :)
                 SwearUtils.checkAll(m.getConfig().getString("command"), e.getPlayer());
             }
          });

@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
+@Deprecated
 public class SwearUtils {
     private static BSwear main;
     public SwearUtils(BSwear m) {main = m;}
@@ -61,8 +62,7 @@ public class SwearUtils {
             sendTitle(plr, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
         }
     }
-    
-    @SuppressWarnings("deprecation")
+
     public static void kickOrBan(Player plr) {
         boolean kick = main.getConfig().getBoolean("kickSwearer");
         boolean ban = main.getConfig().getBoolean("banSwearer");
@@ -100,9 +100,7 @@ public class SwearUtils {
     public static int getPlrSwears(Player plr) {
         if (hasSweared(plr)) {
             return main.swearers.getInt("swearers."+plr.getUniqueId()+".amount");
-        } else {
-            return 0;
-        }
+        } else return 0;
     }
 
     /**
@@ -111,21 +109,18 @@ public class SwearUtils {
      */
     public static boolean hasSweared(Player plr) {
         try {
-            if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) {
-                return false;
-            }
+            if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) return false;
+
             return main.swearers.getBoolean("swearers." + plr.getUniqueId() + ".hasSweared");
         } catch (Exception ingore) {
             return false;
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static void sendTitle(Player plr, String title, String sub) {
         try {
             TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
         } catch (Exception e) {
-            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/5ce44d45312122ecf210dbf614e125f72289f43f
             plr.sendTitle(title, sub);
         }
     }
@@ -137,7 +132,7 @@ public class SwearUtils {
     public static String repl(String msg, String w) {
         return msg.replaceAll(w, repeat("*", w.length()));
     }
-    
+
     public static String repeat(String a, int b) {
         String c = a;
         for (int i = 1; i < b;) {
