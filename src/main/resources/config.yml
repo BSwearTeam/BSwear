@@ -11,7 +11,7 @@ showJoinMessage: true
 antiSpam:
   enable: true
   # Set the spam amount in seconds for cooldown
-  spamTimer: 4
+  spamTimer: 2
   # Set this to how many times a person can speak per spamTimer amount.
   messageAmount: 3
   # Disable if someone can say the same message twice in a row.
