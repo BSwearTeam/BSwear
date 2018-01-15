@@ -26,9 +26,9 @@ cancelMessage: false
 maxWarnings: 5
 
 
-# The Command to be ran when somewon swears
+# The Command to be ran when someone swears
 # if you put the command kick it will not work!
-command: 'enter command here with out an slash'
+command: 'enter command here without an slash'
 commandenable: false
 
 
@@ -43,7 +43,7 @@ banSwearer: false
 
 
 # send title,
-#   true = Use the build in TitlesAPI
+#   true = Use the built in TitlesAPI
 #   false = Does not use the TitlesAPI
 sendTitle: true
 
