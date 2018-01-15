@@ -3,7 +3,6 @@ package io.github.bswearteam.bswear;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,24 +14,15 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BSwear extends JavaPlugin implements Listener {
-    public PluginDescriptionFile pdf = this.getDescription();
-    public String version = pdf.getVersion();
+    public String version = this.getDescription().getVersion();
 
-    public static Permission BypassPerm = new Permission("bswear.bypass");
-    public Permission CommandPerm = new Permission("bswear.command.use");
-    public Permission allPerm = new Permission("bswear.*");
-    public Permission AdvertisingBypass = new Permission("bswear.advertising.bypass");
     public FileConfiguration config = new YamlConfiguration();
     public FileConfiguration swears = new YamlConfiguration();
     public FileConfiguration swearers = new YamlConfiguration();
@@ -59,9 +49,7 @@ public class BSwear extends JavaPlugin implements Listener {
 
         try {
             logFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
 
         try {
             config.load(configf);
@@ -69,9 +57,7 @@ public class BSwear extends JavaPlugin implements Listener {
             swearers.load(swearersf);
             muted.load(mutedf);
             log.load(logFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException | InvalidConfigurationException e) { e.printStackTrace(); }
 
         saveDefaultConfig();
 
@@ -83,131 +69,90 @@ public class BSwear extends JavaPlugin implements Listener {
         }
 
         // Checks if both ban and kick are set to true
-        if (getConfig().getBoolean("banSwearer") && getConfig().getBoolean("kickSwearer"))
+        if (getConfig().getBoolean("banSwearer") && getConfig().getBoolean("kickSwearer")) {
             getConfig().set("banSwearer", false);
+            saveConfig();
+        }
 
         // sets the prefix
-        if (getConfig().getString("messages.prefix") == null)
-            getConfig().set("messages.prefix", "&6[BSwear]&2");
+        getConfig().addDefault("messages.prefix", "&6[BSwear]&2");
         prefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")) + " ";
 
         pm.registerEvents(this, this);
         getCommand("mute").setExecutor(new Mute(this));
         getCommand("bswear").setExecutor(new BSwearCommand(this));
         getCommand("swear").setExecutor(new SwearCommand(this));
-        registerEvents(pm, this, this, new OnJoin(this), new Mute(this), new Advertising(this));
+
+        Listener[] ls = {this, new OnJoin(this), new Mute(this), new Advertising(this), new AntiSpam(this), new AntiCaps()};
+        for (Listener l : ls) pm.registerEvents(l, this);
+
         checkForUpdate();
     }
 
-    public static void registerEvents(PluginManager p, org.bukkit.plugin.Plugin plugin, Listener... listeners) {
-        for (Listener lis : listeners)
-            p.registerEvents(lis, plugin);
-    }
-
-    public static String getFromURL(final String urlString) throws MalformedURLException {
-        // Used for the Updater
+    public void checkForUpdate() {
         BufferedInputStream in = null;
         String output = "";
 
         try {
-            in = new BufferedInputStream(new URL(urlString).openStream());
+            in = new BufferedInputStream(new URL("https://raw.githubusercontent.com/BSwearTeam/BSwear/master/version").openStream());
             byte[] contents = new byte[1024];
 
             int bytesRead = 0;
-            while ((bytesRead = in.read(contents)) != -1) {
-                output = new String(contents, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return output;
-    }
+            while ((bytesRead = in.read(contents)) != -1) output = new String(contents, 0, bytesRead);
+        } catch (IOException e) { e.printStackTrace(); }
 
-    public void checkForUpdate() {
-        String url = "https://raw.githubusercontent.com/BSwearTeam/BSwear/master/version";
-        try {
-            String versions = getFromURL(url);
-            String[] ver = versions.split("\n");
-            if (!ArrayUtils.contains(ver, version)) {
-                getLogger().info("[=-=] BSwear Update [=-=]");
-                getLogger().info("An Update should be available.");
-                getLogger().info("Current Version: " + version);
-                getLogger().info("New Version: " + ver[0]);
-            } else getLogger().info("BSwear is up-to-date");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        String[] ver = output.split("\n");
+        if (!ArrayUtils.contains(ver, version)) {
+            getLogger().info("[=-=] BSwear Update [=-=]");
+            getLogger().info("An Update should be available.");
+            getLogger().info("Current Version: " + version);
+            getLogger().info("New Version: " + ver[0]);
+        } else getLogger().info("BSwear is up-to-date");
 
-    }
-
-    /* Controls config files */
-    public void saveSwearConfig() {
-        saveConf(swears, swearf);
-    }
-
-    public void saveSwearersConfig() {
-        saveConf(swearers, swearersf);
     }
 
     @EventHandler
     public void onChatSwear(AsyncPlayerChatEvent event) {
         String message = ChatColor.stripColor(event.getMessage().toLowerCase().replaceAll("[%&*()$#!-_@]", ""));
         Player p = event.getPlayer();
-        if (a.contains(p.getName() + "-" + message)) {
-            return;
-        }
+        if (a.contains(p.getName() + "-" + message)) return;
+
         boolean has = false;
-        boolean allowUsersToSeeWords = true; // TODO: add to configuration
-        String messagewithoutswear = message;
-        int i = 0;
+        String messageFixed = message;
+
         for (String word : swears.getStringList("warnList")) {
             if (ifHasWord(message, word)) {
                 has = true;
                 event.setCancelled(true); // BSwear handles sending the message so cancel the event.
-                if (getConfig().getBoolean("cancelMessage")) {
-                    has = false; // cancel message.
-                } else {
-                    messagewithoutswear = messagewithoutswear.replaceAll(word, repeat("*", word.length()));
-                    if (!allowUsersToSeeWords) event.setMessage(messagewithoutswear);
-
-                    if (!canSee(p) && i == 0) {
-                        p.sendMessage(ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.AQUA + "A word has been blocked in your message.");
-                        i++;
-                    }
+                if (getConfig().getBoolean("cancelMessage")) has = false; // cancel message.
+                else {
+                    messageFixed = messageFixed.replaceAll(word, repeat("*", word.length()));
+                    event.setMessage(messageFixed);
 
                     List<String> l = log.getStringList("log");
-                    String a = event.getPlayer().getName() + " said " + word.toUpperCase() + " in message: " + event.getMessage();
-                    l.add(a);
+                    l.add(p.getName() + " said " + word.toUpperCase() + " in: " + event.getMessage());
                     log.set("log", l);
                     saveConf(log, logFile);
 
-                    SwearUtils.checkAll(getConfig().getString("command"), event.getPlayer());
+                    SwearUtils.runAll(event.getPlayer());
                     event.setCancelled(true);
                 }
             }
             if (has) {
-                if (allowUsersToSeeWords) {
-                    event.setCancelled(true);
-                    if (!a.contains(event.getPlayer().getName() + "-" + message) 
-                            /*|| !lastblockmsg.equalsIgnoreCase(event.getPlayer().getName() + "-" + message)*/) {
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            p.sendMessage(String.format(event.getFormat(), event.getPlayer().getDisplayName(),
-                                    (canSee(p) ? event.getMessage() : messagewithoutswear)));
-                        }
-                        a.add(event.getPlayer().getName() + "-" + message);
-                        Bukkit.getScheduler().runTaskLater(this, () -> {
-                            a.remove(event.getPlayer().getName() + message);
-                        }, 2);
-                    }
-                } else {
-                    event.setCancelled(false);
-                    event.setMessage(messagewithoutswear);
+                if (!canSee(p)) 
+                    p.sendMessage(ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.AQUA + "A word has been blocked in your message.");
+
+                event.setCancelled(true);
+                for (Player pl : Bukkit.getOnlinePlayers()) {
+                    pl.sendMessage(String.format(event.getFormat(), p.getDisplayName(), canSee(pl) ? event.getMessage() : messageFixed));
                 }
+                a.add(event.getPlayer().getName() + "-" + message);
+                Bukkit.getScheduler().runTaskLater(this, () -> a.remove(event.getPlayer().getName() + message), 2);
             }
         }
     }
 
-    public static String repeat(String a, int b) {
+    public String repeat(String a, int b) {
         String c = a;
         for (int i = 1; i < b;) {
             c = c + a;
@@ -231,17 +176,13 @@ public class BSwear extends JavaPlugin implements Listener {
         for (String partOfMessage : messageAsArray) {
             StringBuilder strBuilder = new StringBuilder();
             char[] messageAsCharArray = partOfMessage.toLowerCase().toCharArray();
-            for (char character : messageAsCharArray) {
-                if (character >= '0' && character <= '9' || character >= 'a' && character <= 'z')
-                    strBuilder.append(character);
-            }
+
+            for (char character : messageAsCharArray) if (character >= '0' && character <= '9' || character >= 'a' && character <= 'z')
+                strBuilder.append(character);
+
             if (strBuilder.toString().equalsIgnoreCase(word.toLowerCase())) a = true;
         }
         return a;
-    }
-
-    public String replaceAllNotNormal(String str) {
-        return str.replaceAll("[^\\p{L}\\p{Nd}]", "").replaceAll("[*.-=+:]", "").replaceAll("[%&*()$#!-_@]", "");
     }
 
     public void saveConf(FileConfiguration config, File file) {
@@ -254,9 +195,7 @@ public class BSwear extends JavaPlugin implements Listener {
     }
 
     private void resourceSave(File file, String fileName) {
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            saveResource(fileName, false);
-        }
+        file.getParentFile().mkdirs();
+        if (!file.exists()) saveResource(fileName, false);
     }
 }

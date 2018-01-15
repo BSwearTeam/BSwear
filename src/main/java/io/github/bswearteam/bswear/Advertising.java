@@ -14,18 +14,18 @@ public class Advertising implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST)
     public void OnChatAdvertising(AsyncPlayerChatEvent e) {
       Player p = e.getPlayer();
-      if (!p.hasPermission(m.AdvertisingBypass)) {
+      if (!p.hasPermission("bswear.advertising.bypass")) {
          String msg = e.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
          m.getConfig().getStringList("advertising").stream().forEach((ad) -> {
             if (m.ifHasWord(msg, ad)) {
                 if (m.getConfig().getBoolean("cancelMessage")) e.setCancelled(true);
                 else {
-                    String messagewithoutswear = e.getMessage().replaceAll(ad, SwearUtils.repeat("*", ad.length()));
+                    String messagewithoutswear = e.getMessage().replaceAll(ad, m.repeat("*", ad.length()));
                     e.setMessage(messagewithoutswear);
                 }
                 
                 e.getPlayer().sendMessage(m.prefix + ChatColor.RED + ChatColor.BOLD + "No advertising!");
-                SwearUtils.checkAll(m.getConfig().getString("command"), e.getPlayer());
+                SwearUtils.runAll(p);
             }
          });
       }

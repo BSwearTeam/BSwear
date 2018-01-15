@@ -72,6 +72,7 @@ public class TitlesAPI extends JavaPlugin implements Listener{
             }
         } catch (Exception e) {
             e.printStackTrace();
+            player.sendTitle(title, subtitle); // fallback to Bukkit API
         }
     }
 	

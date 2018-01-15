@@ -15,42 +15,35 @@ public class BSwearCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("bswear")) {
-            if (sender.hasPermission(m.CommandPerm) || sender.isOp() || sender.hasPermission(m.allPerm)) {
+            if (sender.hasPermission("bswear.command.use") || sender.isOp() || sender.hasPermission("bswear.*")) {
                 if (args.length == 0) {
                     sendMessage(sender, m.prefix);
                     sendMessage(sender, ChatColor.AQUA + "BSwear v" + m.version);
                     sendMessage(sender, ChatColor.AQUA + "Cmd Help: /bswear help");
-
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
                     sendMessage(sender, m.prefix + " Usage: /bswear <option>");
                     sendMessage(sender, m.prefix + " Options:");
                     showCommandUsage(sender);
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
                     sendMessage(sender, m.prefix +ChatColor.AQUA+ "BSwear v" +ChatColor.GREEN+ m.version);
-
                 } else if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
                     List<String> words = m.swears.getStringList("warnList");
                     String word = args[1].toLowerCase();
                     if (!words.contains(word)) {
                         words.add(word);
                         m.swears.set("warnList", words);
-                        m.saveSwearConfig();
+                        m.saveConf(m.swears, m.swearf);
                         sender.sendMessage(m.prefix + m.getConfig().getString("messages.addword"));
-                    } else {
-                        sender.sendMessage(m.prefix +ChatColor.RED+ChatColor.BOLD + "Error! This word is already blocked!");
-                    }
-
+                    } else sender.sendMessage(m.prefix +ChatColor.RED+ChatColor.BOLD + "Error! This word is already blocked!");
                 } else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
                     List<String> words = m.swears.getStringList("warnList");
                     String word = args[1].toLowerCase();
                     if (words.contains(word)) {
                         words.remove(word);
                         m.swears.set("warnList", words);
-                        m.saveSwearConfig();
+                        m.saveConf(m.swears, m.swearf);
                         sender.sendMessage(m.prefix + m.getConfig().getString("messages.delword"));
-                    } else {
-                        sender.sendMessage(m.prefix +ChatColor.RED+ChatColor.BOLD+ "Error! This word is not blocked!");
-                    }
+                    } else sender.sendMessage(m.prefix +ChatColor.RED+ChatColor.BOLD+ "Error! This word is not blocked!");
 
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("wordlist")) {
                     List<String> words = m.swears.getStringList("warnList");
@@ -73,51 +66,42 @@ public class BSwearCommand implements CommandExecutor {
                     words.stream().forEach((word) -> {
                         words.remove(word);
                         m.swears.set("warnList", words);
-                        m.saveSwearConfig();
-                        sender.sendMessage(m.prefix +"All blocked words have been unblocked!");
+                        m.saveConf(m.swears, m.swearf);
                     });
+                    sender.sendMessage(m.prefix + "All blocked words have been unblocked!");
 
                 } else if (args.length == 2 && args[0].equalsIgnoreCase("prefix")) {
                     m.getConfig().set("messages.prefix", args[1]);
                     m.saveConfig();
                     m.prefix = ChatColor.translateAlternateColorCodes('&', args[1]+" ");
+                    sender.sendMessage("Prefix changed to: " + m.prefix);
 
                 } else if (args.length > 0 && args[0].equalsIgnoreCase("useTitles")) {
                     if (args.length == 2) {
-                        if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("yes") || args[1].equalsIgnoreCase("y") || args[1].equalsIgnoreCase("enable")) {
-                            m.getConfig().set("sendTitle", true);
-                            m.saveConfig();
-                            sendMessage(sender, m.prefix + "Title on swear is now ENABLED");
-                        } else {
-                            m.getConfig().set("sendTitle", false);
-                            m.saveConfig();
-                            sendMessage(sender, m.prefix + "Title on swear is now DISABLED");
-                        }
+                        boolean t = args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("yes") || args[1].equalsIgnoreCase("y") || args[1].equalsIgnoreCase("enable");
+                        m.getConfig().set("sendTitle", t);
                         m.saveConfig();
-                    } else {
-                        sendMessage(sender, "TitleAPI enabled: " + m.getConfig().getBoolean("sendTitle"));
-                    }
+                        sendMessage(sender, m.prefix + "Title on swear is now " + (t ? "EN" : "DIS") + "ABLED");
+                    } else sendMessage(sender, "TitleAPI enabled: " + m.getConfig().getBoolean("sendTitle"));
                 } else if (args.length > 0 && args[0].equalsIgnoreCase("allowViewPlayer")) {
                     if (args.length == 1) {
                         sender.sendMessage(ChatColor.RED + "Usage: /bswear allowViewPlayer <Player>");
                         return true;
                     }
-                    List<String> words = m.getConfig().getStringList("allowViewPlayers");
-                    String word = args[1].toLowerCase();
-                    if (!words.contains(word)) {
-                        words.add(word);
-                        m.getConfig().set("allowViewPlayers", words);
+                    List<String> plrs = m.getConfig().getStringList("allowViewPlayers");
+                    String plr = args[1].toLowerCase();
+                    if (!plrs.contains(plr)) {
+                        plrs.add(plr);
+                        m.getConfig().set("allowViewPlayers", plrs);
                         m.saveConfig();
                         sender.sendMessage(m.prefix + " Player " + args[1] + " can now read swear messages.");
                     } else {
-                        words.remove(word);
-                        m.getConfig().set("allowViewPlayers", words);
+                        plrs.remove(plr);
+                        m.getConfig().set("allowViewPlayers", plr);
                         m.saveConfig();
                         sender.sendMessage(m.prefix + " Player " + args[1] + " can now NOT read swear messages.");
                     }
-                } else {
-                    sender.sendMessage(m.prefix + "Error! Wrong args, do \"/bswear help\" for command help");
-                }
+                } else sender.sendMessage(m.prefix + "Error! Wrong args, do \"/bswear help\" for command help");
             } else {
                 sender.sendMessage(m.prefix + "BSwear " + m.version);
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', m.getConfig().getString("messages.noperm")));

@@ -5,149 +5,65 @@ import java.util.Date;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
-@Deprecated
 public class SwearUtils {
     private static BSwear main;
     public SwearUtils(BSwear m) {main = m;}
 
-    /**
-     * Checks every thing.
-     */
-    public static void checkAll(String sc, Player p) {
+    public static void runAll(Player p) {
+        setSwearNum(p, hasSweared(p) ? getPlrSwears(p) + 1 : 1);
+
+        if (main.getConfig().getBoolean("commandenable")) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
+            main.getConfig().getString("command").replace("%swearer%", p.getName()));
+
+        if (main.getConfig().getBoolean("sendTitle")) sendTitle(p, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
+
         try {
-            if (hasSweared(p)){
-                setSwearNum(p, (getPlrSwears(p) + 1));
-            } else {
-                setSwearNum(p, 1);
+            boolean kick = main.getConfig().getBoolean("kickSwearer");
+            boolean ban = main.getConfig().getBoolean("banSwearer");
+            
+            if (kick) {
+                p.kickPlayer("Kicked for swearing");
+                return;
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
 
-        try {
-            runCommand(sc, p);
-        } catch (Exception e) { System.err.println("Error: " + e); }
+            if (ban) {
+                Date d = new Date(System.currentTimeMillis());
+                d.setHours(d.getHours() + getPlrSwears(p));
 
-        try {
-            sendTitle(p);
-        } catch (Exception e) { System.err.println("Error: " + e); }
+                String time = getPlrSwears(p) + " hour";
+                if (getPlrSwears(p) > 1) time = time + "s";
 
-        try {
-            kickOrBan(p);
+                String reason = "Banned for " + time + " for swearing.";
+                p.kickPlayer(reason);
+                Bukkit.getServer().getBanList(Type.NAME).addBan(p.getName(), reason, d, "BSwear");
+            }
         } catch (Exception e) { System.err.println("Error: " + e); }
     }
 
-    /**
-     * if commandenable is true,
-     * then a {@link Command} will run.
-     * 
-     * @param sc <i>The command to run</i>
-     * @param plr <i>The player that is swearing</i>
-     */
-    public static void runCommand(String sc, Player plr) {
-        if (main.getConfig().getBoolean("commandenable")) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), sc.replace("%swearer%", plr.getName()));
-        }
-    }
-
-    /**
-     * if sendTitle is true,
-     * the swearer will get an message as an "title" in the middle of there screen, saying No Swearing
-     */
-    public static void sendTitle(Player plr) {
-        if (main.getConfig().getBoolean("sendTitle")) {
-            sendTitle(plr, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
-        }
-    }
-
-    public static void kickOrBan(Player plr) {
-        boolean kick = main.getConfig().getBoolean("kickSwearer");
-        boolean ban = main.getConfig().getBoolean("banSwearer");
-        
-        if (kick) {
-            plr.kickPlayer("Kicked for swearing");
-            return;
-        }
-
-        if (ban) {
-            plr.kickPlayer("We've detected a swear word in your msg, so your now tempbanned.");
-            Date d = new Date(System.currentTimeMillis());
-            d.setHours(d.getHours() + getPlrSwears(plr));
-
-            String time = getPlrSwears(plr) + " hour";
-            if (getPlrSwears(plr) > 1) time = time + "s";
-
-            Bukkit.getServer().getBanList(Type.NAME).addBan(plr.getName(), "Banned for " + time + " for swearing.", d, "BSwear");
-        }
-    }
-
-    /**
-     * @param player the Player.
-     * @param amount the amount.
-     */ 
     public static void setSwearNum(Player plr, int amount) {
-        main.swearers.set("swearers."+plr.getUniqueId()+".amount", amount);
-        main.swearers.set("swearers."+plr.getUniqueId()+".hasSweared", true);
+        main.swearers.set("swearers." + plr.getUniqueId() + ".amount", amount);
+        main.swearers.set("swearers." + plr.getUniqueId() + ".hasSweared", true);
+        main.saveConfig();
     }
 
-    /**
-     * @param plr the Player
-     * @return The amount of times {@link Player} has sweared.
-     */ 
     public static int getPlrSwears(Player plr) {
-        if (hasSweared(plr)) {
-            return main.swearers.getInt("swearers."+plr.getUniqueId()+".amount");
-        } else return 0;
+        return (hasSweared(plr) ? main.swearers.getInt("swearers."+plr.getUniqueId()+".amount") : 0);
     }
 
-    /**
-     * @param plr The Player
-     * @return player has sweared befour.
-     */
     public static boolean hasSweared(Player plr) {
         try {
             if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) return false;
 
             return main.swearers.getBoolean("swearers." + plr.getUniqueId() + ".hasSweared");
-        } catch (Exception ingore) {
-            return false;
-        }
+        } catch (Exception ingore) { return false; }
     }
 
+    @SuppressWarnings("deprecation")
     public static void sendTitle(Player plr, String title, String sub) {
         try {
             TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
-        } catch (Exception e) {
-            plr.sendTitle(title, sub);
-        }
-    }
-
-    /**
-     * Replaces a word in the message with stars.
-     * @return String
-     */
-    public static String repl(String msg, String w) {
-        return msg.replaceAll(w, repeat("*", w.length()));
-    }
-
-    public static String repeat(String a, int b) {
-        String c = a;
-        for (int i = 1; i < b;) {
-            c = c + a;
-            i++;
-        }
-        return c;
-    }
-
-    public static boolean canSee(Player p) {
-        try {
-            return main.getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        } catch (Exception e) { plr.sendTitle(title, sub); }
     }
 }
