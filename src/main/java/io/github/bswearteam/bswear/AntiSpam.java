@@ -38,14 +38,14 @@ public class AntiSpam implements Listener {
         
         if (cooldown.contains(p.getName())) {
             e.setCancelled(true);
-            p.sendMessage(ChatColor.RED + "Please wait " + time + " seconds between chat messages.");
+            p.sendMessage(ChatColor.RED + "Please wait 1 second between chat messages.");
             return;
         }
 
         chat.put(p.getName(), msg);
         cooldown.add(p.getName());
 
-        Bukkit.getScheduler().runTaskLater(b, () -> cooldown.remove(p.getName()), time * 19); // 20 ticks per second
+        Bukkit.getScheduler().runTaskLater(b, () -> cooldown.remove(p.getName()), 20); // 20 ticks per second
         Bukkit.getScheduler().runTaskLater(b, () -> chat.remove(p.getName(), msg), (time + 3) * 20); // 20 ticks per second
     }
 }

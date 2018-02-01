@@ -1,5 +1,4 @@
-# BSwearPlus
-# Block swear words
+# Blocked swear words
 warnList:
   - 'abruti'
   - 'address'

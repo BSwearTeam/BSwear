@@ -20,6 +20,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.bswearteam.bswear.bstats.Metrics;
+
 public class BSwear extends JavaPlugin implements Listener {
     public String version = this.getDescription().getVersion();
 
@@ -66,6 +68,7 @@ public class BSwear extends JavaPlugin implements Listener {
             getLogger().info("[=-=] BSwear team [=-=]");
             getLogger().info("This server runs BSwear v" + version);
             getLogger().info("- ClusterAPI by AdityaTD");
+            getLogger().info("- Metrics by bStats.org");
         }
 
         // Checks if both ban and kick are set to true
@@ -86,7 +89,9 @@ public class BSwear extends JavaPlugin implements Listener {
         Listener[] ls = {this, new OnJoin(this), new Mute(this), new Advertising(this), new AntiSpam(this), new AntiCaps()};
         for (Listener l : ls) pm.registerEvents(l, this);
 
-        checkForUpdate();
+        new Metrics(this);
+
+        Bukkit.getScheduler().runTaskLater(this, () -> checkForUpdate(), 20); // Run after server fully loaded
     }
 
     public void checkForUpdate() {
