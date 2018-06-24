@@ -13,7 +13,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class AntiSpam implements Listener {
     public HashMap<String, String> chat = new HashMap<>();
     public ArrayList<String> cooldown = new ArrayList<>();
-    
+
     private BSwear b;
     public AntiSpam(BSwear b) {
         this.b = b;

@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -107,13 +107,12 @@ public class BSwear extends JavaPlugin implements Listener {
         } catch (IOException e) { e.printStackTrace(); }
 
         String[] ver = output.split("\n");
-        if (!ArrayUtils.contains(ver, version)) {
+        if (!Arrays.asList(ver).contains(version)) {
             getLogger().info("[=-=] BSwear Update [=-=]");
             getLogger().info("An Update should be available.");
             getLogger().info("Current Version: " + version);
             getLogger().info("New Version: " + ver[0]);
         } else getLogger().info("BSwear is up-to-date");
-
     }
 
     @EventHandler
@@ -170,7 +169,7 @@ public class BSwear extends JavaPlugin implements Listener {
         try {
             return getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Warnning: Error while geting player from allowViewPlayers list: " + e.getMessage());
             return false;
         }
     }

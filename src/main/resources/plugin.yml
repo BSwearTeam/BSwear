@@ -1,5 +1,5 @@
 name: BSwear
-version: 5.0-SNAPSHOT
+version: 5.0
 authors: [BSwearTeam]
 main: io.github.bswearteam.bswear.BSwear
 description: Block those nasty players from swearing, 400 preblocked words! Customisable!
