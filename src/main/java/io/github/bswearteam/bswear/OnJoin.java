@@ -15,9 +15,8 @@ public class OnJoin implements Listener {
         if (m.getConfig().getBoolean("showJoinMessage")) {
             int pWarn = SwearUtils.getPlrSwears(e.getPlayer());
             //e.getPlayer().sendMessage(m.prefix +ChatColor.GRAY+ "Protected by powerful antiswear.");
-            if (pWarn > 0) {
+            if (pWarn > 0)
                 e.getPlayer().sendMessage(m.prefix +ChatColor.GRAY+ "You have " + pWarn + " warnings out of max "+m.getConfig().getInt("maxWarnings"));
-            }
         }
     }
 }

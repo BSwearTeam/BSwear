@@ -24,13 +24,13 @@ public class Mute implements Listener, CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (sender.hasPermission("bswear.command.mute") || sender.isOp()) {
+        if (sender.hasPermission("bswear.command.mute") || sender.hasPermission("bswear.command.bmute") || sender.isOp()) {
             if (args.length == 2) {
                 boolean add = args[0].equalsIgnoreCase("add");
                 boolean remove = args[0].equalsIgnoreCase("remove");
 
                 if (!(add || remove)) {
-                    sender.sendMessage(ChatColor.RED + "Usage: /mute <add/remove> <player>");
+                    sender.sendMessage(ChatColor.RED + "Usage: /bmute <add/remove> <player>");
                     return true;
                 }
 
@@ -43,7 +43,7 @@ public class Mute implements Listener, CommandExecutor {
                     m.saveConf(m.muted, m.mutedf);
                     sender.sendMessage(ChatColor.RED + mutePlayer.getName() + ChatColor.RED + " is now " + (add ? "muted!" : "unmuted"));
                 }
-            } else sender.sendMessage(ChatColor.RED + "Usage: /mute <add/remove> <player>");
+            } else sender.sendMessage(ChatColor.RED + "Usage: /bmute <add/remove> <player>");
 
             return true;
         } else sender.sendMessage("No permission");

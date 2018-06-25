@@ -82,7 +82,7 @@ public class BSwear extends JavaPlugin implements Listener {
         prefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")) + " ";
 
         pm.registerEvents(this, this);
-        getCommand("mute").setExecutor(new Mute(this));
+        getCommand("bmute").setExecutor(new Mute(this));
         getCommand("bswear").setExecutor(new BSwearCommand(this));
         getCommand("swear").setExecutor(new SwearCommand(this));
 
@@ -147,9 +147,9 @@ public class BSwear extends JavaPlugin implements Listener {
                     p.sendMessage(ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.AQUA + "A word has been blocked in your message.");
 
                 event.setCancelled(true);
-                for (Player pl : Bukkit.getOnlinePlayers()) {
+                for (Player pl : Bukkit.getOnlinePlayers())
                     pl.sendMessage(String.format(event.getFormat(), p.getDisplayName(), canSee(pl) ? event.getMessage() : messageFixed));
-                }
+
                 a.add(event.getPlayer().getName() + "-" + message);
                 Bukkit.getScheduler().runTaskLater(this, () -> a.remove(event.getPlayer().getName() + message), 2);
             }

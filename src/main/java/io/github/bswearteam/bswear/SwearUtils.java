@@ -62,8 +62,6 @@ public class SwearUtils {
 
     @SuppressWarnings("deprecation")
     public static void sendTitle(Player plr, String title, String sub) {
-        try {
-            TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
-        } catch (Exception e) { plr.sendTitle(title, sub); }
+        TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
     }
 }
