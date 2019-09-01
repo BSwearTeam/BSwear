@@ -8,26 +8,25 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.EventPriority;
 
 public class Advertising implements Listener {
+
     private BSwear m;
     public Advertising(BSwear b) { m = b;}
 
     @EventHandler(priority=EventPriority.HIGHEST)
-    public void OnChatAdvertising(AsyncPlayerChatEvent e) {
-      Player p = e.getPlayer();
-      if (!p.hasPermission("bswear.advertising.bypass")) {
-         String msg = e.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
-         m.getConfig().getStringList("advertising").stream().forEach((ad) -> {
-            if (m.ifHasWord(msg, ad)) {
-                if (m.getConfig().getBoolean("cancelMessage")) e.setCancelled(true);
-                else {
-                    String messagewithoutswear = e.getMessage().replaceAll(ad, m.repeat("*", ad.length()));
-                    e.setMessage(messagewithoutswear);
+    public void onChatAdvertising(AsyncPlayerChatEvent e) {
+        Player p = e.getPlayer();
+        if (!p.hasPermission("bswear.advertising.bypass")) {
+            String msg = e.getMessage().toLowerCase().replaceAll("[-_*. ]", "");
+            m.getConfig().getStringList("advertising").stream().forEach(ad -> {
+                if (m.ifHasWord(msg, ad)) {
+                    if (m.getConfig().getBoolean("cancelMessage")) e.setCancelled(true);
+                    else e.setMessage( e.getMessage().replaceAll(ad, m.repeat("*", ad.length())) );
+
+                    e.getPlayer().sendMessage(m.prefix + ChatColor.RED + ChatColor.BOLD + "No advertising!");
+                    SwearUtils.runAll(p);
                 }
-                
-                e.getPlayer().sendMessage(m.prefix + ChatColor.RED + ChatColor.BOLD + "No advertising!");
-                SwearUtils.runAll(p);
-            }
-         });
-      }
-   }
+            });
+        }
+    }
+
 }

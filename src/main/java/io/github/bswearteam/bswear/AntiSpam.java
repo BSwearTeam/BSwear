@@ -23,19 +23,19 @@ public class AntiSpam implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         if (!b.getConfig().getBoolean("antispam.enable", true)) return;
 
-        int time = b.getConfig().getInt("antispam.spamtimer", 3);
+        int time = b.getConfig().getInt("antispam.spamtimer", 2);
         Player p = e.getPlayer();
         String msg = ChatColor.stripColor(e.getMessage());
 
         if (chat.containsKey(p.getName())) {
             String s = chat.getOrDefault(p.getName(), "bswear123456789-987654321");
             if (!s.equalsIgnoreCase("bswear123456789-987654321") && s.equalsIgnoreCase(msg)) {
-                p.sendMessage(ChatColor.RED + "Please wait " + (time + 3) + " seconds between similar chat messages.");
+                p.sendMessage(ChatColor.RED + "Please wait " + (time + 2) + " seconds between similar chat messages.");
                 e.setCancelled(true);
                 return;
             }
         }
-        
+
         if (cooldown.contains(p.getName())) {
             e.setCancelled(true);
             p.sendMessage(ChatColor.RED + "Please wait 1 second between chat messages.");

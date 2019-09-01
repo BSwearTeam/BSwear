@@ -1,28 +1,43 @@
 package io.github.bswearteam.bswear;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import static io.github.bswearteam.bswear.BSwear.i;
 
 public class SwearUtils {
-    private static BSwear main;
-    public SwearUtils(BSwear m) {main = m;}
 
+    public static HashMap<String, Integer> swearers;
+
+    public static void init() {
+        swearers = new HashMap<>();
+        if (i.swearersf.exists()) {
+            load();
+        } else save();
+    }
+
+    @SuppressWarnings("deprecation")
     public static void runAll(Player p) {
         setSwearNum(p, hasSweared(p) ? getPlrSwears(p) + 1 : 1);
 
-        if (main.getConfig().getBoolean("commandenable")) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
-            main.getConfig().getString("command").replace("%swearer%", p.getName()));
+        if (i.getConfig().getBoolean("commandenable")) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), 
+            i.getConfig().getString("command").replace("%swearer%", p.getName()));
 
-        if (main.getConfig().getBoolean("sendTitle")) sendTitle(p, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
+        if (i.getConfig().getBoolean("sendTitle")) TitlesAPI.sendFullTitle(p, 10, 80, 10, ChatColor.DARK_RED + "ERROR", ChatColor.GOLD + "No Swearing");
 
         try {
-            boolean kick = main.getConfig().getBoolean("kickSwearer");
-            boolean ban = main.getConfig().getBoolean("banSwearer");
-            
+            boolean kick = i.getConfig().getBoolean("kickSwearer");
+            boolean ban = i.getConfig().getBoolean("banSwearer");
+
             if (kick) {
                 p.kickPlayer("Kicked for swearing");
                 return;
@@ -43,25 +58,42 @@ public class SwearUtils {
     }
 
     public static void setSwearNum(Player plr, int amount) {
-        main.swearers.set("swearers." + plr.getUniqueId() + ".amount", amount);
-        main.swearers.set("swearers." + plr.getUniqueId() + ".hasSweared", true);
-        main.saveConfig();
+        String uuid = plr.getUniqueId().toString();
+        swearers.put(uuid, swearers.getOrDefault(uuid, 0) + 1);
+        save();
     }
 
     public static int getPlrSwears(Player plr) {
-        return (hasSweared(plr) ? main.swearers.getInt("swearers."+plr.getUniqueId()+".amount") : 0);
+        return hasSweared(plr) ? swearers.get(plr.getUniqueId().toString()) : 0;
     }
 
     public static boolean hasSweared(Player plr) {
+        return swearers.keySet().contains(plr.getUniqueId().toString());
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static void load() {
         try {
-            if (main.swearers.getConfigurationSection("swearers." + plr.getUniqueId()) == null) return false;
-
-            return main.swearers.getBoolean("swearers." + plr.getUniqueId() + ".hasSweared");
-        } catch (Exception ingore) { return false; }
+            i.swearersf.getParentFile().mkdir();
+            FileInputStream fis = new FileInputStream(i.swearersf);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            swearers = (HashMap<String, Integer>) ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    @SuppressWarnings("deprecation")
-    public static void sendTitle(Player plr, String title, String sub) {
-        TitlesAPI.sendFullTitle(plr, 10, 80, 10, title, sub);
+    public static void save() {
+        try {
+            i.swearersf.createNewFile();
+            FileOutputStream fos = new FileOutputStream(i.swearersf);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(swearers);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }

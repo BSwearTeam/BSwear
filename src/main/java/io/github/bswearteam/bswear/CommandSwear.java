@@ -10,10 +10,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CommandSwear implements Listener {
+
     private BSwear main;
     public CommandSwear(BSwear m){main = m;}
 
-    @EventHandler(priority=EventPriority.HIGHEST)
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onCommandSwear(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String command = event.getMessage().substring(1).toLowerCase(Locale.ENGLISH);
@@ -29,7 +30,7 @@ public class CommandSwear implements Listener {
                             event.setMessage(messagewithoutswear);
                             event.getPlayer().sendMessage(ChatColor.DARK_GREEN+"[BSwear] "+ChatColor.YELLOW + ChatColor.AQUA + ChatColor.BOLD +"We've detected a swear word MIGHT be in your message so we blocked that word!");
                         }
-                      
+
                         // The flowing Will check the config, to see if the user has it enabled :)
                         SwearUtils.runAll(event.getPlayer());
                     }
@@ -40,7 +41,7 @@ public class CommandSwear implements Listener {
 
     public boolean ifStartsWith(String a, String...strs) {
         for(String s:strs) if(a.startsWith(s)) return true;
-
         return false;
     }
+
 }

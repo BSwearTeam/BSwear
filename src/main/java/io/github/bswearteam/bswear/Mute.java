@@ -11,7 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+@Deprecated // Update mute system
 public class Mute implements Listener, CommandExecutor {
+
     private BSwear m;
     public Mute(BSwear b){m = b;}
 
@@ -19,7 +21,7 @@ public class Mute implements Listener, CommandExecutor {
     public void onChatMute(AsyncPlayerChatEvent event) {
         if (m.muted.getBoolean("muted." + event.getPlayer().getName().toLowerCase())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(m.prefix+"You are muted");
+            event.getPlayer().sendMessage(m.prefix + "You are muted");
         }
     }
 
@@ -35,13 +37,13 @@ public class Mute implements Listener, CommandExecutor {
                 }
 
                 Player mutePlayer = Bukkit.getPlayer(args[1]);
-                if (mutePlayer == null) {
+                if (mutePlayer == null)
                     sender.sendMessage(ChatColor.YELLOW + args[1] + ChatColor.RED  + " is not online");
-                } else {
-                    m.muted.set("muted." + mutePlayer.getName().toLowerCase(), (add ? true : null));
-
+                else {
+                    m.muted.set("muted." + mutePlayer.getName().toLowerCase(), add ? true : null);
                     m.saveConf(m.muted, m.mutedf);
-                    sender.sendMessage(ChatColor.RED + mutePlayer.getName() + ChatColor.RED + " is now " + (add ? "muted!" : "unmuted"));
+
+                    sender.sendMessage(ChatColor.RED + mutePlayer.getName() + ChatColor.RED + " is now " + (add ? "muted" : "unmuted"));
                 }
             } else sender.sendMessage(ChatColor.RED + "Usage: /bmute <add/remove> <player>");
 
@@ -50,4 +52,5 @@ public class Mute implements Listener, CommandExecutor {
 
         return false;
     }
+
 }

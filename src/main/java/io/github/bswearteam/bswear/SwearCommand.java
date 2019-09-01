@@ -2,6 +2,7 @@ package io.github.bswearteam.bswear;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class SwearCommand implements CommandExecutor {
+
     public BSwear m;
     public SwearCommand(BSwear b){this.m = b;}
 
@@ -34,6 +36,7 @@ public class SwearCommand implements CommandExecutor {
 
     public void sendMessage(CommandSender s, String msg) {
         if (s instanceof Player) s.sendMessage(msg);
-        else s.sendMessage(ChatColor.stripColor(msg));
+        else Bukkit.getConsoleSender().sendMessage(ChatColor.stripColor(msg));
     }
+
 }

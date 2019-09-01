@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>io.github.bswearteam.bswear</groupId>
-  <version>5.x-snapshot</version>
+  <version>5.x</version>
 
   <name>BSwear</name>
   <url>http://dev.bukkit.org/projects/bswear</url>
@@ -11,7 +11,7 @@
   <build>
     <defaultGoal>package</defaultGoal>
     <directory>${basedir}</directory>
-    <finalName>bSwear-${project.version}</finalName>
+    <finalName>bSwear</finalName>
   </build>
 
   <properties>

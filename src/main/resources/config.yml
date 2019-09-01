@@ -1,5 +1,4 @@
-# BSwear -- Antiswearing!
-# By TheBSwearTeam
+# BSwear -- Antiswear
 
 # start message
 showEnabledMessage: true
@@ -30,21 +29,16 @@ maxWarnings: 5
 command: 'enter command here without an slash'
 commandenable: false
 
-# Kick swearer,
-# Kicks the swearer (use this instead of the command /kick)
+# Kick the swearer
 kickSwearer: false
 
-# Ban swearer,
-# Bans the swearer (use this instead of the command /ban)
+# Ban the swearer
 banSwearer: false
 
-# send title,
-#   true = Use the built in TitlesAPI
-#   false = Does not use the TitlesAPI
+# Send no swear message as a Title to the player
 sendTitle: true
 
-
-# Messages,
+# Messages
 messages:
     addword: 'Word Added'
     delword: 'Word Removed'

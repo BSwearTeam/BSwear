@@ -38,9 +38,7 @@ public class TitlesAPI extends JavaPlugin implements Listener{
             Object handle = player.getClass().getMethod("getHandle").invoke(player);
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
             playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     public static Class<?> getNMSClass(String name) {
@@ -53,6 +51,7 @@ public class TitlesAPI extends JavaPlugin implements Listener{
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
         try {
             if (title != null) {
@@ -75,5 +74,5 @@ public class TitlesAPI extends JavaPlugin implements Listener{
             player.sendTitle(title, subtitle); // fallback to Bukkit API
         }
     }
-	
+
 }

@@ -4,9 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,52 +23,47 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.bswearteam.bswear.bstats.Metrics;
 
 public class BSwear extends JavaPlugin implements Listener {
+
     public String version = this.getDescription().getVersion();
 
-    public FileConfiguration config = new YamlConfiguration();
     public FileConfiguration swears = new YamlConfiguration();
-    public FileConfiguration swearers = new YamlConfiguration();
     public FileConfiguration muted = new YamlConfiguration();
-    public FileConfiguration log = new YamlConfiguration();
+
     public String prefix = ChatColor.GOLD + "[BSwear] " + ChatColor.GREEN;
-    public File configf, swearf, swearersf, logFile, mutedf;
+    public File swearf, swearersf, logFile, mutedf;
     public ArrayList<String> logtext = new ArrayList<>();
     public ArrayList<String> a = new ArrayList<>();
+    public static BSwear i;
 
     @Override
     public void onEnable() {
+        i = this;
         PluginManager pm = Bukkit.getServer().getPluginManager();
-        configf = new File(getDataFolder(), "config.yml");
+
         swearf = new File(getDataFolder(), "words.yml");
-        swearersf = new File(getDataFolder(), "swearers.yml");
+        swearersf = new File(getDataFolder(), "swearers.dat");
         mutedf = new File(getDataFolder(), "mutedPlayers.yml");
         logFile = new File(getDataFolder(), "log.yml");
 
-        resourceSave(configf, "config.yml");
         resourceSave(swearf, "words.yml");
-        resourceSave(swearersf, "swearers.yml");
         resourceSave(mutedf, "mutedPlayers.yml");
+        SwearUtils.init();
 
         try {
             logFile.createNewFile();
         } catch (IOException e) { e.printStackTrace(); }
 
         try {
-            config.load(configf);
             swears.load(swearf);
-            swearers.load(swearersf);
             muted.load(mutedf);
-            log.load(logFile);
         } catch (IOException | InvalidConfigurationException e) { e.printStackTrace(); }
 
         saveDefaultConfig();
 
         // Shows an message saying BSwear is enabled
         if (getConfig().getBoolean("showEnabledMessage")) {
-            getLogger().info("[=-=] BSwear team [=-=]");
-            getLogger().info("This server runs BSwear v" + version);
-            getLogger().info("- ClusterAPI by AdityaTD");
-            getLogger().info("- Metrics by bStats.org");
+            getLogger().info("This server runs BSwear " + version);
+            getLogger().info("- ClusterAPI by AdityaTD & Metrics by bStats");
         }
 
         // Checks if both ban and kick are set to true
@@ -78,20 +73,24 @@ public class BSwear extends JavaPlugin implements Listener {
         }
 
         // sets the prefix
-        getConfig().addDefault("messages.prefix", "&6[BSwear]&2");
         prefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")) + " ";
 
-        pm.registerEvents(this, this);
-        getCommand("bmute").setExecutor(new Mute(this));
+        Mute m = new Mute(this);
+        getCommand("bmute").setExecutor(m);
         getCommand("bswear").setExecutor(new BSwearCommand(this));
         getCommand("swear").setExecutor(new SwearCommand(this));
 
-        Listener[] ls = {this, new OnJoin(this), new Mute(this), new Advertising(this), new AntiSpam(this), new AntiCaps()};
+        Listener[] ls = {this, new OnJoin(this), m, new Advertising(this), new AntiSpam(this), new AntiCaps()};
         for (Listener l : ls) pm.registerEvents(l, this);
 
         new Metrics(this);
 
         Bukkit.getScheduler().runTaskLater(this, () -> checkForUpdate(), 20); // Run after server fully loaded
+    }
+
+    @Override
+    public void onDisable() {
+        SwearUtils.save();
     }
 
     public void checkForUpdate() {
@@ -107,12 +106,13 @@ public class BSwear extends JavaPlugin implements Listener {
         } catch (IOException e) { e.printStackTrace(); }
 
         String[] ver = output.split("\n");
+
         if (!Arrays.asList(ver).contains(version)) {
             getLogger().info("[=-=] BSwear Update [=-=]");
             getLogger().info("An Update should be available.");
             getLogger().info("Current Version: " + version);
             getLogger().info("New Version: " + ver[0]);
-        } else getLogger().info("BSwear is up-to-date");
+        }
     }
 
     @EventHandler
@@ -122,6 +122,7 @@ public class BSwear extends JavaPlugin implements Listener {
         if (a.contains(p.getName() + "-" + message)) return;
 
         boolean has = false;
+        String org_msg = event.getMessage();
         String messageFixed = message;
 
         for (String word : swears.getStringList("warnList")) {
@@ -130,13 +131,20 @@ public class BSwear extends JavaPlugin implements Listener {
                 event.setCancelled(true); // BSwear handles sending the message so cancel the event.
                 if (getConfig().getBoolean("cancelMessage")) has = false; // cancel message.
                 else {
-                    messageFixed = messageFixed.replaceAll(word, repeat("*", word.length()));
-                    event.setMessage(messageFixed);
+                    event.setMessage(messageFixed = messageFixed.replaceAll(word, repeat("*", word.length())));
 
-                    List<String> l = log.getStringList("log");
-                    l.add(p.getName() + " said " + word.toUpperCase() + " in: " + event.getMessage());
-                    log.set("log", l);
-                    saveConf(log, logFile);
+                    try {
+                        ArrayList<String> list = new ArrayList<>();
+                        list.addAll(Files.readAllLines(logFile.toPath()));
+                        list.add(p.getName() + ": " + event.getMessage().replaceAll(word, "[" + word + "]"));
+                        String str = "";
+                        for (String s : list)
+                            if (s.length() > 3)
+                                str += s + "\n";
+                        Files.write(logFile.toPath(), str.getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     SwearUtils.runAll(event.getPlayer());
                     event.setCancelled(true);
@@ -146,9 +154,10 @@ public class BSwear extends JavaPlugin implements Listener {
                 if (!canSee(p)) 
                     p.sendMessage(ChatColor.DARK_GREEN + "[BSwear] " + ChatColor.AQUA + "A word has been blocked in your message.");
 
-                event.setCancelled(true);
                 for (Player pl : Bukkit.getOnlinePlayers())
-                    pl.sendMessage(String.format(event.getFormat(), p.getDisplayName(), canSee(pl) ? event.getMessage() : messageFixed));
+                    pl.sendMessage(String.format(event.getFormat(), p.getDisplayName(), canSee(pl) ? org_msg : messageFixed));
+
+                event.setCancelled(true);
 
                 a.add(event.getPlayer().getName() + "-" + message);
                 Bukkit.getScheduler().runTaskLater(this, () -> a.remove(event.getPlayer().getName() + message), 2);
@@ -167,9 +176,9 @@ public class BSwear extends JavaPlugin implements Listener {
 
     public boolean canSee(Player p) {
         try {
-            return getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
+            return p.hasPermission("bswear.view") || getConfig().getStringList("allowViewPlayers").contains(p.getName().toLowerCase());
         } catch (Exception e) {
-            System.err.println("Warnning: Error while geting player from allowViewPlayers list: " + e.getMessage());
+            getLogger().warning("Error while geting player from allowViewPlayers list: " + e.getMessage());
             return false;
         }
     }
@@ -194,7 +203,7 @@ public class BSwear extends JavaPlugin implements Listener {
             config.save(file);
         } catch (IOException e) {
             e.printStackTrace();
-            getLogger().info("[ERROR] Cant save " + file.getName());
+            getLogger().severe("Cant save " + file.getName());
         }
     }
 
@@ -202,4 +211,5 @@ public class BSwear extends JavaPlugin implements Listener {
         file.getParentFile().mkdirs();
         if (!file.exists()) saveResource(fileName, false);
     }
+
 }
